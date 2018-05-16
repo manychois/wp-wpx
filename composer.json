@@ -1,0 +1,18 @@
+{
+	"name": "manychois/wp-wpx",
+	"description": "A utility library for overriding WordPress default HTML output easily",
+	"keywords": [ "wordpress" ],
+	"license": "MIT",
+	"authors": [
+		{
+			"name": "Siu Pang Tommy Choi",
+			"role": "Developer"
+		}
+	],
+	"require": {
+		"php": ">=7.0.0"
+	},
+	"autoload": {
+		"psr-4": { "Manychois\\Wpx\\": "src/" }
+	}
+}

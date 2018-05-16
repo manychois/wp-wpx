@@ -1,0 +1,9 @@
+################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/.vs
+/vendor
+/wp-wpx.sln
+/wp-wpx.phpproj.user
+/wp-wpx.phpproj
