@@ -16,7 +16,8 @@ class UtilityTest extends TestCase
 		$this->assertSame($expected, $actual);
 	}
 
-	public function data_findAspectRatio() {
+	public function data_findAspectRatio()
+	{
 		return [
 			['', 1, 0],
 			['', 0, 1],
@@ -30,5 +31,12 @@ class UtilityTest extends TestCase
 			['21x9', 21, 9],
 			['', 23, 9]
 		];
+	}
+
+	public function test_getFromGet()
+	{
+		$u = new Utility();
+		$actual = $u->getFromGet('abc');
+		$this->assertNull($actual);
 	}
 }

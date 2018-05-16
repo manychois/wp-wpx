@@ -51,5 +51,20 @@ class Utility implements UtilityInterface
 		return $aspectRatio;
 	}
 
+	/**
+	 * Safe get the value from $_GET. The value is stripped to undo WordPress default slash insertion.
+	 * @param string $name
+	 * @param mixed $default Value when the name is not found. Default is null.
+	 * @return mixed
+	 */
+	public function getFromGet(string $name, $default = null)
+	{
+		if (isset($_GET[$name])) {
+			return stripslashes_deep($_GET[$name]); // TODO: Remove WordPress dependency
+		} else {
+			return $default;
+		}
+	}
+
 	#endregion
 }

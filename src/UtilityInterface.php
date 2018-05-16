@@ -15,4 +15,12 @@ interface UtilityInterface
 	 * @return string The closest aspect ratio to the specified width and height.
 	 */
 	function findAspectRatio(int $width, int $height) : string;
+
+	/**
+	 * Safe get the value from $_GET. The value is stripped to undo WordPress default slash insertion.
+	 * @param string $name
+	 * @param mixed $default Value when the name is not found. Default is null.
+	 * @return mixed
+	 */
+	function getFromGet(string $name, $default = null);
 }
