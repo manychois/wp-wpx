@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "f4a3167571e2af96dbc76af2020133bf",
+    "content-hash": "213db90a1dcf7663f3c222c18372d8f4",
     "packages": [
         {
             "name": "ivopetkov/html5-dom-document-php",
@@ -1549,7 +1549,9 @@
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
-        "php": ">=7.0.0"
+        "php": ">=7.0"
     },
-    "platform-dev": []
+    "platform-dev": {
+        "php": "^7.1"
+    }
 }
