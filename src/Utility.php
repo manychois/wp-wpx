@@ -6,6 +6,15 @@ namespace Manychois\Wpx;
  */
 class Utility implements UtilityInterface
 {
+	/**
+	 * @var WpContextInterface
+	 */
+	private $wp;
+
+	public function __construct(WpContextInterface $wp)
+	{
+		$this->wp = $wp;	
+	}
 
 	#region Manychois\Wpx\UtilityInterface Members
 
@@ -60,7 +69,7 @@ class Utility implements UtilityInterface
 	public function getFromGet(string $name, $default = null)
 	{
 		if (isset($_GET[$name])) {
-			return stripslashes_deep($_GET[$name]); // TODO: Remove WordPress dependency
+			return $this->wp->stripslashes_deep($_GET[$name]);
 		} else {
 			return $default;
 		}

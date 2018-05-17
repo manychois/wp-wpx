@@ -3,6 +3,7 @@ namespace Manychois\Wpx\Tests;
 
 use PHPUnit\Framework\TestCase;
 use Manychois\Wpx\Utility;
+use Manychois\Wpx\Tests\WpContext;
 
 class UtilityTest extends TestCase
 {
@@ -11,7 +12,8 @@ class UtilityTest extends TestCase
 	 */
 	public function test_findAspectRatio($expected, $w, $h)
 	{
-		$u = new Utility();
+		$wp = new WpContext();
+		$u = new Utility($wp);
 		$actual = $u->findAspectRatio($w, $h);
 		$this->assertSame($expected, $actual);
 	}
@@ -35,8 +37,19 @@ class UtilityTest extends TestCase
 
 	public function test_getFromGet()
 	{
-		$u = new Utility();
+		$wp = new WpContext();
+		$u = new Utility($wp);
 		$actual = $u->getFromGet('abc');
 		$this->assertNull($actual);
+
+		$actual = $u->getFromGet('abc', '123');
+		$this->assertSame('123', $actual);
+
+		$_GET['abc'] = "It\'s fun!";
+		$wp->addHook('stripslashes_deep', function($value) {
+			return "It's fun!";
+		});
+		$actual = $u->getFromGet('abc', '123');
+		$this->assertSame("It's fun!", $actual);
 	}
 }
