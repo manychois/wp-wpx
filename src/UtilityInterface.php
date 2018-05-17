@@ -23,4 +23,12 @@ interface UtilityInterface
 	 * @return mixed
 	 */
 	public function getFromGet(string $name, $default = null);
+
+	/**
+	 * Safe get the value from $_POST. The value is stripped to undo WordPress default slash insertion.
+	 * @param string $name
+	 * @param mixed $default Value when the name is not found. Default is null.
+	 * @return mixed
+	 */
+	public function getFromPost(string $name, $default = null);
 }

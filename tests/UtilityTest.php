@@ -52,4 +52,22 @@ class UtilityTest extends TestCase
 		$actual = $u->getFromGet('abc', '123');
 		$this->assertSame("It's fun!", $actual);
 	}
+
+	public function test_getFromPost()
+	{
+		$wp = new WpContext();
+		$u = new Utility($wp);
+		$actual = $u->getFromPost('abc');
+		$this->assertNull($actual);
+
+		$actual = $u->getFromPost('abc', '123');
+		$this->assertSame('123', $actual);
+
+		$_POST['abc'] = "It\'s fun!";
+		$wp->addHook('stripslashes_deep', function($value) {
+			return "It's fun!";
+		});
+		$actual = $u->getFromPost('abc', '123');
+		$this->assertSame("It's fun!", $actual);
+	}
 }

@@ -13,7 +13,7 @@ class Utility implements UtilityInterface
 
 	public function __construct(WpContextInterface $wp)
 	{
-		$this->wp = $wp;	
+		$this->wp = $wp;
 	}
 
 	#region Manychois\Wpx\UtilityInterface Members
@@ -75,5 +75,19 @@ class Utility implements UtilityInterface
 		}
 	}
 
+	/**
+	 * Safe get the value from $_POST. The value is stripped to undo WordPress default slash insertion.
+	 * @param string $name
+	 * @param mixed $default Value when the name is not found. Default is null.
+	 * @return mixed
+	 */
+	public function getFromPost(string $name, $default = null)
+	{
+		if (isset($_POST[$name])) {
+			return $this->wp->stripslashes_deep($_POST[$name]);
+		} else {
+			return $default;
+		}
+	}
 	#endregion
 }
