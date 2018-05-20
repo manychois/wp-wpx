@@ -70,4 +70,56 @@ class UtilityTest extends TestCase
 		$actual = $u->getFromPost('abc', '123');
 		$this->assertSame("It's fun!", $actual);
 	}
+
+	public function test_minimizeHead()
+	{
+		$wp = new WpContext();
+		$logs = [];
+		$wp->addHook('add_filter', function($tag, $function_to_add) use (&$logs) {
+			$logs[] = "add_filter:$tag:$function_to_add";
+		});
+		$wp->addHook('remove_action', function($tag, $function_to_remove) use (&$logs) {
+			$logs[] = "remove_action:$tag:$function_to_remove";
+		});
+		$u = new Utility($wp);
+		$u->minimizeHead();
+		$expected = [
+			'remove_action:wp_head:rest_output_link_wp_head',
+			'remove_action:wp_head:print_emoji_detection_script',
+			'remove_action:wp_print_styles:print_emoji_styles',
+			'add_filter:emoji_svg_url:__return_false',
+			'remove_action:wp_head:feed_links_extra',
+			'remove_action:wp_head:wp_generator',
+			'add_filter:the_generator:__return_false',
+			'remove_action:wp_head:rsd_link',
+			'remove_action:wp_head:wp_shortlink_wp_head',
+			'remove_action:wp_head:wlwmanifest_link',
+			'remove_action:wp_head:wp_oembed_add_discovery_links',
+			'remove_action:wp_head:wp_oembed_add_host_js'
+		];
+		$this->assertSame(implode("\n", $expected), implode("\n", $logs));
+
+		$logs = [];
+		$u->minimizeHead([
+			'admin_bar' => true,
+			'api' => false,
+			'canonical' => true,
+			'emoji' => false,
+			'extra_feed_links' => false,
+			'generator' => false,
+			'prev_next' => true,
+			'res_hint' => true,
+			'rsd' => false,
+			'shortlink' => false,
+			'wlw' => false,
+			'wp_oembed' => false
+		]);
+		$expected = [
+			'add_filter:show_admin_bar:__return_false',
+			'remove_action:wp_head:rel_canonical',
+			'remove_action:wp_head:adjacent_posts_rel_link_wp_head',
+			'remove_action:wp_head:wp_resource_hints'
+		];
+		$this->assertSame(implode("\n", $expected), implode("\n", $logs));
+	}
 }

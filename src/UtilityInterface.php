@@ -31,4 +31,13 @@ interface UtilityInterface
 	 * @return mixed
 	 */
 	public function getFromPost(string $name, $default = null);
+
+	/**
+	 * Reduce unnecessary WordPress default stuff in <head> tag.
+	 * @param array $args
+	 *     Optional. Array of arguments.
+	 *     "api"   bool Set true to remove WP REST API link tag. Default true.
+	 *     "emoji" bool Set true to remove emoji related style and javascript. Default true.
+	 */
+	public function minimizeHead(array $args = []);
 }
