@@ -1,11 +1,10 @@
 <?php
 namespace Manychois\Wpx\Tests;
 
-use PHPUnit\Framework\TestCase;
 use Manychois\Wpx\Utility;
 use Manychois\Wpx\Tests\WpContext;
 
-class UtilityTest extends TestCase
+class UtilityTest extends WpxTestCase
 {
 	/**
 	 * @dataProvider data_findAspectRatio
@@ -71,55 +70,20 @@ class UtilityTest extends TestCase
 		$this->assertSame("It's fun!", $actual);
 	}
 
-	public function test_minimizeHead()
+	public function test_registerStyle()
 	{
 		$wp = new WpContext();
-		$logs = [];
-		$wp->addHook('add_filter', function($tag, $function_to_add) use (&$logs) {
-			$logs[] = "add_filter:$tag:$function_to_add";
-		});
-		$wp->addHook('remove_action', function($tag, $function_to_remove) use (&$logs) {
-			$logs[] = "remove_action:$tag:$function_to_remove";
-		});
 		$u = new Utility($wp);
-		$u->minimizeHead();
-		$expected = [
-			'remove_action:wp_head:rest_output_link_wp_head',
-			'remove_action:wp_head:print_emoji_detection_script',
-			'remove_action:wp_print_styles:print_emoji_styles',
-			'add_filter:emoji_svg_url:__return_false',
-			'remove_action:wp_head:feed_links_extra',
-			'remove_action:wp_head:wp_generator',
-			'add_filter:the_generator:__return_false',
-			'remove_action:wp_head:rsd_link',
-			'remove_action:wp_head:wp_shortlink_wp_head',
-			'remove_action:wp_head:wlwmanifest_link',
-			'remove_action:wp_head:wp_oembed_add_discovery_links',
-			'remove_action:wp_head:wp_oembed_add_host_js'
-		];
-		$this->assertSame(implode("\n", $expected), implode("\n", $logs));
+		$html = "<link rel='stylesheet' id='twentyseventeen-style-css'  href='http://localhost/sample/wp-content/themes/twentyseventeen/style.css?ver=4.9.6' type='text/css' media='all' />\n";
+		$handle = 'twentyseventeen-style';
+		$href = 'http://localhost/sample/wp-content/themes/twentyseventeen/style.css?ver=4.9.6';
+		$actual = $u->style_loader_tag($html, $handle, $href);
+		$expected = $html;
+		$this->assertSame($expected, $actual);
 
-		$logs = [];
-		$u->minimizeHead([
-			'admin_bar' => true,
-			'api' => false,
-			'canonical' => true,
-			'emoji' => false,
-			'extra_feed_links' => false,
-			'generator' => false,
-			'prev_next' => true,
-			'res_hint' => true,
-			'rsd' => false,
-			'shortlink' => false,
-			'wlw' => false,
-			'wp_oembed' => false
-		]);
-		$expected = [
-			'add_filter:show_admin_bar:__return_false',
-			'remove_action:wp_head:rel_canonical',
-			'remove_action:wp_head:adjacent_posts_rel_link_wp_head',
-			'remove_action:wp_head:wp_resource_hints'
-		];
-		$this->assertSame(implode("\n", $expected), implode("\n", $logs));
+		$u->registerStyle('twentyseventeen-style', array('href' => 'http://localhost/sample/wp-content/themes/twentyseventeen/style.css'));
+		$actual = $u->style_loader_tag($html, $handle, $href);
+		$expected = '<link rel="stylesheet" href="http://localhost/sample/wp-content/themes/twentyseventeen/style.css" />' . "\n";
+		$this->assertSame($expected, $actual);
 	}
 }

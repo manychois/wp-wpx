@@ -7,6 +7,10 @@ namespace Manychois\Wpx;
 class Utility implements UtilityInterface
 {
 	/**
+	 * @var array
+	 */
+	private $styleAttrs;
+	/**
 	 * @var WpContextInterface
 	 */
 	private $wp;
@@ -14,6 +18,17 @@ class Utility implements UtilityInterface
 	public function __construct(WpContextInterface $wp)
 	{
 		$this->wp = $wp;
+		$this->styleAttrs = [];
+	}
+
+	/**
+	 * @codeCoverageIgnore
+	 * Setup necessary WordPress hooks
+	 */
+	public function activate()
+	{
+		$wp = $this->wp;
+		$wp->add_filter('style_loader_tag', array($this, 'style_loader_tag'), 10, 3);
 	}
 
 	#region Manychois\Wpx\UtilityInterface Members
@@ -91,6 +106,7 @@ class Utility implements UtilityInterface
 	}
 
 	/**
+	 * @codeCoverageIgnore
 	 * Reduce unnecessary WordPress default stuff in <head> tag.
 	 * @param array $args
 	 *     Optional. Array of arguments.
@@ -164,6 +180,45 @@ class Utility implements UtilityInterface
 			$this->wp->remove_action('wp_head', 'wp_oembed_add_discovery_links');
 			$this->wp->remove_action('wp_head', 'wp_oembed_add_host_js');
 		}
+	}
+
+	/**
+	 * Initialize a tag builder.
+	 * @param string $tagName Node name of the element.
+	 * @return TagBuilder Returns tag builder with tag name initialized.
+	 */
+	public function newTag(string $tagName) : TagBuilder
+	{
+		$tb = new TagBuilder($tagName);
+		return $tb;
+	}
+
+	/**
+	 * Register a new style.
+	 * @param string $handle Name of the stylesheet. Should be unique.
+	 * @param array $attrs Associative array of HTML atrributes of the style link tag. Attribute href must be present.
+	 * @param array $deps Optional. An array of registered stylesheet handles this stylesheet depends on. Default empty array.
+	 * @return void
+	 */
+	public function registerStyle(string $handle, array $attrs, array $deps = array())
+	{
+		$src = $attrs['href'];
+		$this->wp->wp_register_style($handle, $src, $deps, null);
+		$this->styleAttrs[$handle] = $attrs;
+	}
+
+	#endregion
+
+	#region WordPress hooks
+
+	public function style_loader_tag(string $html, string $handle, string $href) : string
+	{
+		if (array_key_exists($handle, $this->styleAttrs)) {
+			$attrs = $this->styleAttrs[$handle];
+			$attrs = array_merge(['rel' => 'stylesheet'], $attrs);
+			$html = $this->newTag('link')->setAttr($attrs) . "\n";
+		}
+		return $html;
 	}
 
 	#endregion

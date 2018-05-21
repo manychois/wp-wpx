@@ -40,4 +40,20 @@ interface UtilityInterface
 	 *     "emoji" bool Set true to remove emoji related style and javascript. Default true.
 	 */
 	public function minimizeHead(array $args = []);
+
+	/**
+	 * Initialize a tag builder.
+	 * @param string $tagName Node name of the element.
+	 * @return TagBuilder Returns tag builder with tag name initialized.
+	 */
+	public function newTag(string $tagName) : TagBuilder;
+
+	/**
+	 * Register a new style.
+	 * @param string $handle Name of the stylesheet. Should be unique.
+	 * @param array $attrs Associative array of HTML atrributes of the style link tag. Attribute href must be present.
+	 * @param array $deps Optional. An array of registered stylesheet handles this stylesheet depends on. Default empty array.
+	 * @return void
+	 */
+	public function registerStyle(string $handle, array $attrs, array $deps = array());
 }
