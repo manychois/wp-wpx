@@ -6,6 +6,14 @@ Wpx provides an alternative way to override the HTML output in WordPress. Hopefu
 - <del>Customize external CSS file &lt;link&gt; tag.</del> (2018-05-22)
 - <del>Customize external JavaScript file &lt;script&gt; tag.</del> (2018-05-22)
 - Define some kind of view engine similar to ASP.NET Razor.
+- Customize nav menu output.
+- Customize post pagination output.
+- Customize linked page pagination output.
+- Customize comment list output.
+- Customize comment pagination output.
+- Customize comment form output.
+- Customize gallery output.
+- Customize search box output.
 - And more...
 
 ## License
