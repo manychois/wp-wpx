@@ -70,6 +70,20 @@ class UtilityTest extends WpxTestCase
 		$this->assertSame("It's fun!", $actual);
 	}
 
+	public function test_registerScript()
+	{
+		$wp = new WpContext();
+		$u = new Utility($wp);
+		$tag = "<script type='text/javascript' src='http://localhost/sample/wp-content/themes/twentyseventeen/assets/js/global.js?ver=1.0'></script>\n";
+		$handle = 'twentyseventeen-global';
+		$src = 'http://localhost/sample/wp-content/themes/twentyseventeen/assets/js/global.js?ver=1.0';
+
+		$u->registerScript('twentyseventeen-global', array('src' => 'http://localhost/sample/wp-content/themes/twentyseventeen/assets/js/global.js'));
+		$actual = $u->script_loader_tag($tag, $handle, $src);
+		$expected = '<script src="http://localhost/sample/wp-content/themes/twentyseventeen/assets/js/global.js"></script>' . "\n";
+		$this->assertSame($expected, $actual);
+	}
+
 	public function test_registerStyle()
 	{
 		$wp = new WpContext();
@@ -77,9 +91,6 @@ class UtilityTest extends WpxTestCase
 		$html = "<link rel='stylesheet' id='twentyseventeen-style-css'  href='http://localhost/sample/wp-content/themes/twentyseventeen/style.css?ver=4.9.6' type='text/css' media='all' />\n";
 		$handle = 'twentyseventeen-style';
 		$href = 'http://localhost/sample/wp-content/themes/twentyseventeen/style.css?ver=4.9.6';
-		$actual = $u->style_loader_tag($html, $handle, $href);
-		$expected = $html;
-		$this->assertSame($expected, $actual);
 
 		$u->registerStyle('twentyseventeen-style', array('href' => 'http://localhost/sample/wp-content/themes/twentyseventeen/style.css'));
 		$actual = $u->style_loader_tag($html, $handle, $href);

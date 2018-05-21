@@ -9,6 +9,10 @@ class Utility implements UtilityInterface
 	/**
 	 * @var array
 	 */
+	private $scriptAttrs;
+	/**
+	 * @var array
+	 */
 	private $styleAttrs;
 	/**
 	 * @var WpContextInterface
@@ -18,6 +22,7 @@ class Utility implements UtilityInterface
 	public function __construct(WpContextInterface $wp)
 	{
 		$this->wp = $wp;
+		$this->scriptAttrs = [];
 		$this->styleAttrs = [];
 	}
 
@@ -28,6 +33,7 @@ class Utility implements UtilityInterface
 	public function activate()
 	{
 		$wp = $this->wp;
+		$wp->add_filter('script_loader_tag', array($this, 'script_loader_tag'), 10, 3);
 		$wp->add_filter('style_loader_tag', array($this, 'style_loader_tag'), 10, 3);
 	}
 
@@ -37,9 +43,9 @@ class Utility implements UtilityInterface
 	 * Return an approximate aspect ratio based on the width and height provided.
 	 * Return empty if no common aspect ratio is matched.
 	 * Supported ratios: 1x1, 4x3, 16x9, 21x9.
-	 * @param int $width
-	 * @param int $height
-	 * @return string The closest aspect ratio to the specified width and height.
+	 * @param int $width  Width of the media.
+	 * @param int $height Height of the media.
+	 * @return string Returns the closest aspect ratio to the specified width and height.
 	 */
 	function findAspectRatio(int $width, int $height) : string
 	{
@@ -77,9 +83,9 @@ class Utility implements UtilityInterface
 
 	/**
 	 * Safe get the value from $_GET. The value is stripped to undo WordPress default slash insertion.
-	 * @param string $name
-	 * @param mixed $default Value when the name is not found. Default is null.
-	 * @return mixed
+	 * @param string $name    Name of the variable.
+	 * @param mixed  $default Value when the name is not found. Default null.
+	 * @return mixed Returns stripped value of the variable.
 	 */
 	public function getFromGet(string $name, $default = null)
 	{
@@ -92,9 +98,9 @@ class Utility implements UtilityInterface
 
 	/**
 	 * Safe get the value from $_POST. The value is stripped to undo WordPress default slash insertion.
-	 * @param string $name
-	 * @param mixed $default Value when the name is not found. Default is null.
-	 * @return mixed
+	 * @param string $name    Name of the variable.
+	 * @param mixed  $default Value when the name is not found. Default null.
+	 * @return mixed Returns stripped value of the variable.
 	 */
 	public function getFromPost(string $name, $default = null)
 	{
@@ -194,10 +200,25 @@ class Utility implements UtilityInterface
 	}
 
 	/**
+	 * Register a new script.
+	 * @param string $handle   Name of the script. Should be unique.
+	 * @param array  $attrs    Associative array of HTML atrributes of the style link tag. Attribute src must be present.
+	 * @param array  $deps     Optional. An array of registered script handles this script depends on. Default empty array.
+	 * @param bool   $inFooter Optional. Set true to place script tag before </body>, or false to place it inside <head>.
+	 *                         Default true. Note that it is different from WordPress default value.
+	 * @return void
+	 */
+	public function registerScript(string $handle, array $attrs, array $deps = array(), bool $inFooter = true) {
+		$src = $attrs['src'];
+		$this->wp->wp_register_script($handle, $src, $deps, null, $inFooter);
+		$this->scriptAttrs[$handle] = $attrs;
+	}
+
+	/**
 	 * Register a new style.
 	 * @param string $handle Name of the stylesheet. Should be unique.
-	 * @param array $attrs Associative array of HTML atrributes of the style link tag. Attribute href must be present.
-	 * @param array $deps Optional. An array of registered stylesheet handles this stylesheet depends on. Default empty array.
+	 * @param array  $attrs  Associative array of HTML atrributes of the style link tag. Attribute href must be present.
+	 * @param array  $deps   Optional. An array of registered stylesheet handles this stylesheet depends on. Default empty array.
 	 * @return void
 	 */
 	public function registerStyle(string $handle, array $attrs, array $deps = array())
@@ -210,6 +231,17 @@ class Utility implements UtilityInterface
 	#endregion
 
 	#region WordPress hooks
+
+	public function script_loader_tag(string $tag, string $handle, string $src) : string
+	{
+		if (array_key_exists($handle, $this->scriptAttrs)) {
+			$attrs = $this->scriptAttrs[$handle];
+			$script = $this->newTag('script')->setAttr($attrs)->append('');
+			$oldTag = "<script type='text/javascript' src='$src'></script>";
+			$tag = str_replace($oldTag, $script, $tag);
+		}
+		return $tag;
+	}
 
 	public function style_loader_tag(string $html, string $handle, string $href) : string
 	{
