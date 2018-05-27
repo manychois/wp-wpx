@@ -3,7 +3,7 @@ namespace Manychois\Wpx\Tests;
 
 use Manychois\Wpx\TagBuilder;
 
-class TagBuilderTest extends WpxTestCase
+class TagBuilderTest extends UnitTestCase
 {
 	public function test_append()
 	{

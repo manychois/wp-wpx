@@ -27,7 +27,6 @@ class Utility implements UtilityInterface
 	}
 
 	/**
-	 * @codeCoverageIgnore
 	 * Setup necessary WordPress hooks
 	 */
 	public function activate()
@@ -215,7 +214,6 @@ class Utility implements UtilityInterface
 	}
 
 	/**
-	 * @codeCoverageIgnore
 	 * Reduce unnecessary WordPress default stuff in <head> tag.
 	 * @param array $args
 	 *     Optional. Array of arguments.

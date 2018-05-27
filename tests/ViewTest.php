@@ -3,7 +3,7 @@ namespace Manychois\Wpx\Tests;
 
 use Manychois\Wpx\Tests\Views\ContentView;
 
-class ViewTest extends WpxTestCase
+class ViewTest extends UnitTestCase
 {
 	public function test_render()
 	{
