@@ -1,6 +1,8 @@
 <?php
 namespace Manychois\Wpx;
 
+use \WP_Term;
+
 /**
  * @codeCoverageIgnore
  * Basic implementation of WpContextInterface which invokes corresponding WordPress functions.
@@ -69,9 +71,22 @@ class WpContext implements WpContextInterface
 	 *
 	 * @return true
 	 */
-	function add_filter($tag, $function_to_add, $priority = 10, $accepted_args = 1)
+	public function add_filter($tag, $function_to_add, $priority = 10, $accepted_args = 1)
 	{
 		return \add_filter($tag, $function_to_add, $priority, $accepted_args);
+	}
+
+	/**
+	 * Retrieves all registered navigation menu locations and the menus assigned to them.
+	 *
+	 * @since 3.0.0
+	 *
+	 * @return array Registered navigation menu locations and the menus assigned them.
+	 *               If none are registered, an empty array.
+	 */
+	public function get_nav_menu_locations()
+	{
+		return \get_nav_menu_locations();
 	}
 
 	/**
@@ -86,7 +101,7 @@ class WpContext implements WpContextInterface
 	 *
 	 * @return bool Whether the function is removed.
 	 */
-	function remove_action($tag, $function_to_remove, $priority = 10)
+	public function remove_action($tag, $function_to_remove, $priority = 10)
 	{
 		return \remove_action($tag, $function_to_remove, $priority);
 	}
@@ -98,9 +113,59 @@ class WpContext implements WpContextInterface
 	 *
 	 * @return mixed Stripped value.
 	 */
-	function stripslashes_deep($value)
+	public function stripslashes_deep($value)
 	{
 		return \stripslashes_deep($value);
+	}
+
+	/**
+	 * Retrieves all menu items of a navigation menu.
+	 *
+	 * Note: Most arguments passed to the `$args` parameter – save for 'output_key' – are
+	 * specifically for retrieving nav_menu_item posts from get_posts() and may only
+	 * indirectly affect the ultimate ordering and content of the resulting nav menu
+	 * items that get returned from this function.
+	 *
+	 * @since 3.0.0
+	 *
+	 * @global string $_menu_item_sort_prop
+	 * @staticvar array $fetched
+	 *
+	 * @param int|string|WP_Term $menu Menu ID, slug, name, or object.
+	 * @param array              $args {
+	 *     Optional. Arguments to pass to get_posts().
+	 *
+	 *     @type string $order       How to order nav menu items as queried with get_posts(). Will be ignored
+	 *                               if 'output' is ARRAY_A. Default 'ASC'.
+	 *     @type string $orderby     Field to order menu items by as retrieved from get_posts(). Supply an orderby
+	 *                               field via 'output_key' to affect the output order of nav menu items.
+	 *                               Default 'menu_order'.
+	 *     @type string $post_type   Menu items post type. Default 'nav_menu_item'.
+	 *     @type string $post_status Menu items post status. Default 'publish'.
+	 *     @type string $output      How to order outputted menu items. Default ARRAY_A.
+	 *     @type string $output_key  Key to use for ordering the actual menu items that get returned. Note that
+	 *                               that is not a get_posts() argument and will only affect output of menu items
+	 *                               processed in this function. Default 'menu_order'.
+	 *     @type bool   $nopaging    Whether to retrieve all menu items (true) or paginate (false). Default true.
+	 * }
+	 * @return false|array $items Array of menu items, otherwise false.
+	 */
+	public function wp_get_nav_menu_items($menu, $args = array())
+	{
+		return \wp_get_nav_menu_items($menu, $args);
+	}
+
+	/**
+	 * Returns a navigation menu object.
+	 *
+	 * @since 3.0.0
+	 *
+	 * @param int|string|WP_Term $menu Menu ID, slug, name, or object.
+	 * @return WP_Term|false False if $menu param isn't supplied or term does not exist, menu object if successful.
+	 */
+	public function wp_get_nav_menu_object($menu)
+	{
+		return \wp_get_nav_menu_object($menu);
 	}
 
 	/**
@@ -119,7 +184,7 @@ class WpContext implements WpContextInterface
 	 *
 	 * @return bool Whether the script has been registered. True on success, false on failure.
 	 */
-	function wp_register_script($handle, $src, $deps = array(), $ver = false, $in_footer = false)
+	public function wp_register_script($handle, $src, $deps = array(), $ver = false, $in_footer = false)
 	{
 		return \wp_register_script($handle, $src, $deps, $ver, $in_footer);
 	}
@@ -140,9 +205,27 @@ class WpContext implements WpContextInterface
 	 *
 	 * @return bool Whether the style has been registered. True on success, false on failure.
 	 */
-	function wp_register_style($handle, $src, $deps = array(), $ver = false, $media = 'all')
+	public function wp_register_style($handle, $src, $deps = array(), $ver = false, $media = 'all')
 	{
 		return \wp_register_style($handle, $src, $deps, $ver, $media);
+	}
+
+	/**
+	 * @return \WP_Query
+	 */
+	public function get_global_wp_query()
+	{
+		global $wp_query;
+		return $wp_query;
+	}
+
+	/**
+	 * @return \wpdb
+	 */
+	public function get_global_wpdb()
+	{
+		global $wpdb;
+		return $wpdb;
 	}
 
 	#endregion

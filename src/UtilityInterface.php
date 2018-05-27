@@ -33,6 +33,13 @@ interface UtilityInterface
 	public function getFromPost(string $name, $default = null);
 
 	/**
+	 * Get the topmost menu item which contains the whole menu structure.
+	 * @param int|string $idOrLocation Menu id, or name of the theme location.
+	 * @return MenuItem Returns the topmost menu item.
+	 */
+	public function getMenuItem($idOrLocation) : MenuItem;
+
+	/**
 	 * @codeCoverageIgnore
 	 * Reduce unnecessary WordPress default stuff in <head> tag.
 	 * @param array $args

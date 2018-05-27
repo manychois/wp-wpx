@@ -112,6 +112,109 @@ class Utility implements UtilityInterface
 	}
 
 	/**
+	 * Get the topmost menu item which contains the whole menu structure.
+	 * @param int|string $idOrLocation Menu id, or name of the theme location.
+	 * @return MenuItem Returns the topmost menu item.
+	 */
+	public function getMenuItem($idOrLocation) : MenuItem
+	{
+		$top = new MenuItem();
+		$wp = $this->wp;
+		$wp_query = $wp->get_global_wp_query();
+		$queried_object_id = intval($wp_query->queried_object_id);
+		if (is_int($idOrLocation)) {
+			$menu = $wp->wp_get_nav_menu_object($idOrLocation);
+		} else {
+			$locations = $wp->get_nav_menu_locations();
+			$menu = $wp->wp_get_nav_menu_object($locations[$idOrLocation]);
+		}
+		if ($menu === false) return $top;
+
+		$menu_items = $wp->wp_get_nav_menu_items($menu->term_id, ['update_post_term_cache' => false]);
+		$lookup = [$top];
+		$missingLabelPosts = [];
+		$missingLabelTaxonomies = [];
+		$currents = [];
+
+		foreach ($menu_items as $wp_mi) {
+			$mi = new MenuItem();
+			$mi->id = intval($wp_mi->ID);
+			$mi->objectId = intval($wp_mi->object_id);
+			$mi->objectType = $wp_mi->object;
+			switch ($wp_mi->type) {
+				case 'taxonomy': $mi->objectBaseType = 'taxonomy'; break;
+				case 'post_type': $mi->objectBaseType = 'post'; break;
+			}
+			$mi->label = $wp_mi->post_title;
+			$mi->title = $wp_mi->post_excerpt;
+			$mi->target = $wp_mi->target;
+			$mi->xfn = $wp_mi->xfn;
+			$mi->description = $wp_mi->post_content;
+			$mi->url = $wp_mi->url;
+			if ($wp_mi->classes && $wp_mi->classes[0] !== '') {
+				$mi->classes = $wp_mi->classes;
+			}
+			if ($queried_object_id === $mi->objectId) {
+				$mi->isCurrent = true;
+				$currents[] = $mi;
+			}
+			$lookup[$mi->id] = $mi;
+			if ($mi->label === '') {
+				if ($mi->objectBaseType === 'post') {
+					$missingLabelPosts[$mi->objectId] = $mi;
+				} else if ($mi->objectBaseType === 'taxonomy') {
+					$missingLabelTaxonomies[$mi->objectId] = $mi;
+				}
+			}
+		}
+
+		foreach ($menu_items as $wp_mi) {
+			$child = $lookup[$wp_mi->ID];
+			$parent = $lookup[$wp_mi->menu_item_parent];
+			$child->parent = $parent;
+			$parent->children[] = $child;
+		}
+		unset($lookup);
+
+		$lookup = $top->children;
+		while (!empty($lookup)) {
+			$mi = $lookup[0];
+			$mi->depth = $mi->parent->depth + 1;
+			array_shift($lookup);
+			$lookup = array_merge($lookup, $mi->children);
+		}
+
+		$wpdb = $wp->get_global_wpdb();
+		if (!empty($missingLabelPosts)) {
+			$sql = sprintf('SELECT ID, post_title FROM %s WHERE ID IN (%s)', $wpdb->posts, implode(',', array_keys($missingLabelPosts)));
+			$rows = $wpdb->get_results($sql);
+			foreach ($rows as $r) {
+				$missingLabelPosts[$r->ID]->label = $r->post_title;
+			}
+			unset($missingLabelPosts);
+		}
+		if (!empty($missingLabelTaxonomies)) {
+			$sql = sprintf('SELECT term_id, name FROM %s WHERE term_id IN (%s)', $wpdb->terms, implode(',', array_keys($missingLabelTaxonomies)));
+			$rows = $wpdb->get_results($sql);
+			foreach ($rows as $r) {
+				$missingLabelTaxonomies[$r->term_id]->label = $r->name;
+			}
+			unset($missingLabelTaxonomies);
+		}
+
+		while (!empty($currents)) {
+			$parent = $currents[0]->parent;
+			if ($parent->id === 0) break;
+			$parent->isCurrentParent = true;
+			$currents[] = $parent;
+			array_shift($currents);
+		}
+
+		error_log(print_r($top, true));
+		return $top;
+	}
+
+	/**
 	 * @codeCoverageIgnore
 	 * Reduce unnecessary WordPress default stuff in <head> tag.
 	 * @param array $args
