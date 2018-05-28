@@ -120,7 +120,7 @@ class Utility implements UtilityInterface
 		$top = new MenuItem();
 		$wp = $this->wp;
 		$wp_query = $wp->get_global_wp_query();
-		$queried_object_id = intval($wp_query->queried_object_id);
+		$qObj = $wp_query->get_queried_object();
 		if (is_int($idOrLocation)) {
 			$menu = $wp->wp_get_nav_menu_object($idOrLocation);
 		} else {
@@ -153,18 +153,24 @@ class Utility implements UtilityInterface
 			if ($wp_mi->classes && $wp_mi->classes[0] !== '') {
 				$mi->classes = $wp_mi->classes;
 			}
-			if ($queried_object_id === $mi->objectId) {
-				$mi->isCurrent = true;
-				$currents[] = $mi;
-			}
-			$lookup[$mi->id] = $mi;
-			if ($mi->label === '') {
-				if ($mi->objectBaseType === 'post') {
+			if ($mi->objectBaseType === 'post') {
+				if (isset($qObj->post_type) && $qObj->ID === $mi->objectId) {
+					$mi->isCurrent = true;
+					$currents[] = $mi;
+				}
+				if ($mi->label === '') {
 					$missingLabelPosts[$mi->objectId] = $mi;
-				} else if ($mi->objectBaseType === 'taxonomy') {
+				}
+			} else if ($mi->objectBaseType === 'taxonomy') {
+				if (isset($qObj->term_id) && $qObj->term_id === $mi->objectId) {
+					$mi->isCurrent = true;
+					$currents[] = $mi;
+				}
+				if ($mi->label === '') {
 					$missingLabelTaxonomies[$mi->objectId] = $mi;
 				}
 			}
+			$lookup[$mi->id] = $mi;
 		}
 
 		foreach ($menu_items as $wp_mi) {
@@ -209,7 +215,6 @@ class Utility implements UtilityInterface
 			array_shift($currents);
 		}
 
-		error_log(print_r($top, true));
 		return $top;
 	}
 
@@ -287,6 +292,7 @@ class Utility implements UtilityInterface
 			$this->wp->remove_action('wp_head', 'wp_oembed_add_discovery_links');
 			$this->wp->remove_action('wp_head', 'wp_oembed_add_host_js');
 		}
+
 	}
 
 	/**

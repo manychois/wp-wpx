@@ -7,7 +7,7 @@ Wpx provides an alternative way to override the HTML output in WordPress. Hopefu
 - <del>Customize external JavaScript file &lt;script&gt; tag.</del> (2018-05-22)
 - <del>Define some kind of view engine similar to ASP.NET Razor.</del> (2018-05-22)
 - <del>Customize nav menu output.</del> (2018-05-27)
-- Revise unit testing approach, and integration test with WordPress if possible.
+- Target: ZERO insufficient test code coverage.
 - Customize post pagination output.
 - Customize linked page pagination output.
 - Customize comment list output.
