@@ -9,7 +9,6 @@ class UtilityMinimizeHeadTest extends IntegrationTestCase
 
 	public function setUp()
 	{
-		parent::setUp();
 		$this->set_permalink_structure('/%postname%/');
 		$this->minimizeHeadArgs = [
 			'admin_bar' => false,
@@ -26,9 +25,9 @@ class UtilityMinimizeHeadTest extends IntegrationTestCase
 			'wp_oembed' => false
 		];
 
-		$this->factory->post->create(['post_title' => 'Post One', 'post_status' => 'publish', 'post_name' => 'post-one']);
-		$this->factory->post->create(['post_title' => 'Post Two', 'post_status' => 'publish', 'post_name' => 'post-two']);
-		$this->factory->post->create(['post_title' => 'Post Three', 'post_status' => 'publish', 'post_name' => 'post-three']);
+		$this->factory->post->create(['post_title' => 'Post One', 'post_status' => 'publish', 'post_date' => '2010-01-01 00:00:00']);
+		$this->factory->post->create(['post_title' => 'Post Two', 'post_status' => 'publish', 'post_date' => '2010-02-01 00:00:00']);
+		$this->factory->post->create(['post_title' => 'Post Three', 'post_status' => 'publish', 'post_date' => '2010-03-01 00:00:00']);
 
 		wp_enqueue_script('test-css', 'https://abc.def.com/default.css');
 		$this->go_to(home_url('/post-two/'));
@@ -39,10 +38,13 @@ class UtilityMinimizeHeadTest extends IntegrationTestCase
 	 */
 	public function test_controlled_experiment()
 	{
-		// <link rel='https://api.w.org/' href='http://example.org/index.php?rest_route=/' />
 		ob_start();
 		wp_head();
 		$headOutput = ob_get_clean();
+
+		ob_start();
+		wp_footer();
+		$footerOutput = ob_get_clean();
 
 		// For test_api()
 		$this->assertTrue(strpos($headOutput, "<link rel='https://api.w.org/'") !== false);
@@ -58,7 +60,9 @@ class UtilityMinimizeHeadTest extends IntegrationTestCase
 		$this->assertTrue(strpos($headOutput, '<link rel="EditURI" type="application/rsd+xml"') !== false);
 		// For test_wlw()
 		$this->assertTrue(strpos($headOutput, '<link rel="wlwmanifest" type="application/wlwmanifest+xml"') !== false);
-
+		// For test_prev_next()
+		$this->assertTrue(strpos($headOutput, "<link rel='prev'") !== false);
+		$this->assertTrue(strpos($headOutput, "<link rel='next'") !== false);
 		// These outputs appear in singular queries only.
 		// For test_canonical()
 		$this->assertTrue(strpos($headOutput, '<link rel="canonical"') !== false);
@@ -69,6 +73,7 @@ class UtilityMinimizeHeadTest extends IntegrationTestCase
 		// For test_wp_oembed()
 		$this->assertTrue(strpos($headOutput, '<link rel="alternate" type="application/json+oembed"') !== false);
 		$this->assertTrue(strpos($headOutput, '<link rel="alternate" type="text/xml+oembed"') !== false);
+		$this->assertTrue(strpos($footerOutput, 'wp-embed.min.js') !== false);
 	}
 
 	public function test_api()
@@ -133,6 +138,20 @@ class UtilityMinimizeHeadTest extends IntegrationTestCase
 		$this->assertFalse(strpos($headOutput, '<meta name="generator" content="WordPress'), $headOutput);
 	}
 
+	public function test_prev_next()
+	{
+		$args = $this->minimizeHeadArgs;
+		$args['prev_next'] = true;
+		$u = new Utility($this->wp());
+		$u->minimizeHead($args);
+		ob_start();
+		wp_head();
+		$headOutput = ob_get_clean();
+		$this->assertFalse(strpos($headOutput, "<link rel='prev'"), $headOutput);
+		$this->assertFalse(strpos($headOutput, "<link rel='next'"), $headOutput);
+	}
+
+
 	public function test_res_hint()
 	{
 		$args = $this->minimizeHeadArgs;
@@ -190,7 +209,11 @@ class UtilityMinimizeHeadTest extends IntegrationTestCase
 		ob_start();
 		wp_head();
 		$headOutput = ob_get_clean();
+		ob_start();
+		wp_footer();
+		$footerOutput = ob_get_clean();
 		$this->assertFalse(strpos($headOutput, '<link rel="alternate" type="application/json+oembed"'), $headOutput);
 		$this->assertFalse(strpos($headOutput, '<link rel="alternate" type="text/xml+oembed"'), $headOutput);
+		$this->assertFalse(strpos($footerOutput, 'wp-embed.min.js'), $footerOutput);
 	}
 }

@@ -13,6 +13,28 @@ class UtilityTest extends IntegrationTestCase
 		$this->set_permalink_structure('/%postname%/');
 	}
 
+	public function test_activate()
+	{
+		$u = new Utility($this->wp());
+		$u->activate();
+		$u->registerStyle('abc', ['href' => 'https://abc.localhost.com/style.css', 'crossorigin' => 'anonymous']);
+		$u->registerScript('abc', ['src' => 'https://abc.localhost.com/script.js', 'defer', 'crossorigin' => 'anonymous']);
+
+		wp_enqueue_style('abc');
+		wp_enqueue_script('abc');
+
+		ob_start();
+		wp_head();
+		$headerOutput = ob_get_clean();
+
+		ob_start();
+		wp_footer();
+		$footerOutput = ob_get_clean();
+
+		$this->assertTrue(strpos($headerOutput, '<link rel="stylesheet" href="https://abc.localhost.com/style.css" crossorigin="anonymous" />') !== false);
+		$this->assertTrue(strpos($footerOutput, '<script src="https://abc.localhost.com/script.js" defer crossorigin="anonymous"></script>') !== false);
+	}
+
 	public function test_getMenuItem()
 	{
 		$menuId = wp_create_nav_menu('Test Menu');
