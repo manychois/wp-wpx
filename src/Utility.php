@@ -4,6 +4,8 @@ namespace Manychois\Wpx;
 /**
  * A utility library for overriding WordPress default HTML output easily.
  */
+
+use IvoPetkov\HTML5DOMDocument;
 class Utility implements UtilityInterface
 {
 	/**
@@ -27,7 +29,7 @@ class Utility implements UtilityInterface
 	}
 
 	/**
-	 * Setup necessary WordPress hooks
+	 * Setups necessary WordPress hooks
 	 */
 	public function activate()
 	{
@@ -39,8 +41,8 @@ class Utility implements UtilityInterface
 	#region Manychois\Wpx\UtilityInterface Members
 
 	/**
-	 * Return an approximate aspect ratio based on the width and height provided.
-	 * Return empty if no common aspect ratio is matched.
+	 * Returns an approximate aspect ratio based on the width and height provided.
+	 * Returns empty if no common aspect ratio is matched.
 	 * Supported ratios: 1x1, 4x3, 16x9, 21x9.
 	 * @param int $width  Width of the media.
 	 * @param int $height Height of the media.
@@ -96,7 +98,7 @@ class Utility implements UtilityInterface
 	}
 
 	/**
-	 * Safe get the value from $_POST. The value is stripped to undo WordPress default slash insertion.
+	 * Safe gets the value from $_POST. The value is stripped to undo WordPress default slash insertion.
 	 * @param string $name    Name of the variable.
 	 * @param mixed  $default Value when the name is not found. Default null.
 	 * @return mixed Returns stripped value of the variable.
@@ -111,7 +113,7 @@ class Utility implements UtilityInterface
 	}
 
 	/**
-	 * Get the topmost menu item which contains the whole menu structure.
+	 * Gets the topmost menu item which contains the whole menu structure.
 	 * @param int|string $idOrLocation Menu id, or name of the theme location.
 	 * @return MenuItem Returns the topmost menu item.
 	 */
@@ -219,7 +221,56 @@ class Utility implements UtilityInterface
 	}
 
 	/**
-	 * Reduce unnecessary WordPress default stuff in <head> tag.
+	 * Returns a list of post pagination links.
+	 * See paginate_links for the argument usage.
+	 * @param NavLink[] $args
+	 */
+	public function getPostPaginationLinks(array $args = []) {
+		$prevNext = array_merge([
+			'prev_text' => $this->wp->__('Previous'),
+			'next_text' => $this->wp->__('Next')], $args);
+		$args = array_merge($args, [
+			'prev_text' => 'PREV',
+			'next_text' => 'NEXT',
+			'type' => '',
+			'before_page_number' => '',
+			'after_page_number' => ''
+		]);
+		
+		$links = $this->wp->paginate_links($args);
+		$pLinks = [];
+		if ($links) {
+			$dom = new HTML5DOMDocument();
+			$dom->loadHTML($links);
+			$eBody = $dom->querySelector('body');
+			foreach ($eBody->childNodes as $n) {
+				if ($n->nodeType != XML_ELEMENT_NODE) continue;
+				$e = Type::DomElement($n);
+				$text = $e->innerHTML;
+				if ($e->tagName === 'a') {
+					$href = $e->getAttribute('href');
+					if ($text === 'PREV') {
+						$pLinks[] = new NavLink(NavLink::PREV, $href, $prevNext['prev_text']);
+					} else if ($text === 'NEXT') {
+						$pLinks[] = new NavLink(NavLink::NEXT, $href, $prevNext['next_text']);
+					} else {
+						$pLinks[] = new NavLink(NavLink::PAGE, $href, $text);
+					}
+				} else if ($e->tagName === 'span') {
+					$class = $e->getAttribute('class');
+					if (strpos($class, 'dots') !== false) {
+						$pLinks[] = new NavLink(NavLink::ELLIPSIS);
+					} else if (strpos($class, 'current') !== false) {
+						$pLinks[] = new NavLink(NavLink::CURRENT, null, $text);
+					}
+				}
+			}
+		}
+		return $pLinks;
+	}
+
+	/**
+	 * Reduces unnecessary WordPress default stuff in <head> tag.
 	 * @param array $args
 	 *     Optional. Array of arguments.
 	 *     "admin_bar"        bool Set true to remove the frontend admin bar. Default false.
@@ -296,7 +347,7 @@ class Utility implements UtilityInterface
 	}
 
 	/**
-	 * Initialize a tag builder.
+	 * Initializes a tag builder.
 	 * @param string $tagName Node name of the element.
 	 * @return TagBuilder Returns tag builder with tag name initialized.
 	 */
@@ -307,7 +358,7 @@ class Utility implements UtilityInterface
 	}
 
 	/**
-	 * Register a new script.
+	 * Registers a new script.
 	 * @param string $handle   Name of the script. Should be unique.
 	 * @param array  $attrs    Associative array of HTML atrributes of the style link tag. Attribute src must be present.
 	 * @param array  $deps     Optional. An array of registered script handles this script depends on. Default empty array.
@@ -322,7 +373,7 @@ class Utility implements UtilityInterface
 	}
 
 	/**
-	 * Register a new style.
+	 * Registers a new style.
 	 * @param string $handle Name of the stylesheet. Should be unique.
 	 * @param array  $attrs  Associative array of HTML atrributes of the style link tag. Attribute href must be present.
 	 * @param array  $deps   Optional. An array of registered stylesheet handles this stylesheet depends on. Default empty array.

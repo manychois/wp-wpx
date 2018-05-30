@@ -3,6 +3,7 @@ namespace Manychois\Wpx\Tests;
 
 use Manychois\Wpx\Utility;
 use Manychois\Wpx\Tests\WpContext;
+use Manychois\Wpx\NavLink;
 
 class UtilityTest extends UnitTestCase
 {
@@ -91,5 +92,44 @@ class UtilityTest extends UnitTestCase
 		$actual = $u->style_loader_tag($html, $handle, $href);
 		$expected = '<link rel="stylesheet" href="http://localhost/sample/wp-content/themes/twentyseventeen/style.css" />' . "\n";
 		$this->assertSame($expected, $actual);
+	}
+
+	public function test_getPostPaginationLinks()
+	{
+		$wp = $this->wp();
+		$wp->method('paginate_links')->willReturn("<a class=\"prev page-numbers\" href=\"http://default.localhost.com/page/2/\">PREV</a>
+<a class='page-numbers' href='http://default.localhost.com/'>1</a>
+<a class='page-numbers' href='http://default.localhost.com/page/2/'>2</a>
+<span aria-current='page' class='page-numbers current'>3</span>
+<a class='page-numbers' href='http://default.localhost.com/page/4/'>4</a>
+<a class='page-numbers' href='http://default.localhost.com/page/5/'>5</a>
+<span class=\"page-numbers dots\">&hellip;</span>
+<a class='page-numbers' href='http://default.localhost.com/page/8/'>8</a>
+<a class=\"next page-numbers\" href=\"http://default.localhost.com/page/4/\">NEXT</a>");
+
+		$u = new Utility($wp);
+		$links = $u->getPostPaginationLinks();
+		$this->assertSame(9, count($links));
+
+		$printLink = function(NavLink $link) {
+			$t = '';
+			switch ($link->type) {
+				case NavLink::PAGE: $t = 'PAGE'; break;
+				case NavLink::PREV: $t = 'PREV'; break;
+				case NavLink::NEXT: $t = 'NEXT'; break;
+				case NavLink::CURRENT: $t = 'CURRENT'; break;
+				case NavLink::ELLIPSIS: $t = 'ELLIPSIS'; break;
+			}
+			return sprintf('[%s][%s][%s]', $t, $link->text, $link->href);
+		};
+		$this->assertSame('[PREV][][http://default.localhost.com/page/2/]', $printLink($links[0]));
+		$this->assertSame('[PAGE][1][http://default.localhost.com/]', $printLink($links[1]));
+		$this->assertSame('[PAGE][2][http://default.localhost.com/page/2/]', $printLink($links[2]));
+		$this->assertSame('[CURRENT][3][]', $printLink($links[3]));
+		$this->assertSame('[PAGE][4][http://default.localhost.com/page/4/]', $printLink($links[4]));
+		$this->assertSame('[PAGE][5][http://default.localhost.com/page/5/]', $printLink($links[5]));
+		$this->assertSame('[ELLIPSIS][][]', $printLink($links[6]));
+		$this->assertSame('[PAGE][8][http://default.localhost.com/page/8/]', $printLink($links[7]));
+		$this->assertSame('[NEXT][][http://default.localhost.com/page/4/]', $printLink($links[8]));
 	}
 }
