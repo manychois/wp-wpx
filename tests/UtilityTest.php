@@ -94,6 +94,32 @@ class UtilityTest extends UnitTestCase
 		$this->assertSame($expected, $actual);
 	}
 
+	public function test_getPaginatedPostLinks_args_number()
+	{
+		$wp = $this->wp();
+		$wp->method('wp_link_pages')->willReturn(' <a href="http://default.localhost.com/template-paginated/"><span>1</span></a> <span>2</span> <a href="http://default.localhost.com/template-paginated/3/"><span>3</span></a>');
+		$u = new Utility($wp);
+		$links = $u->getPaginatedPostLinks();
+		$this->assertSame(3, count($links));
+		$this->assertSame('[PAGE][1][http://default.localhost.com/template-paginated/]', $this->strNavLink($links[0]));
+		$this->assertSame('[CURRENT][2][]', $this->strNavLink($links[1]));
+		$this->assertSame('[PAGE][3][http://default.localhost.com/template-paginated/3/]', $this->strNavLink($links[2]));
+	}
+
+	public function test_getPaginatedPostLinks_args_next()
+	{
+		$wp = $this->wp();
+		$wp->method('wp_link_pages')->willReturn('<a href="http://default.localhost.com/template-paginated/"><span>PREV</span></a> <a href="http://default.localhost.com/template-paginated/3/"><span>NEXT</span></a>');
+		$u = new Utility($wp);
+		$links = $u->getPaginatedPostLinks([
+			'nextpagelink' => 'Next Page',
+			'previouspagelink' => 'Previous Page'
+		]);
+		$this->assertSame(2, count($links));
+		$this->assertSame('[PREV][Previous Page][http://default.localhost.com/template-paginated/]', $this->strNavLink($links[0]));
+		$this->assertSame('[NEXT][Next Page][http://default.localhost.com/template-paginated/3/]', $this->strNavLink($links[1]));
+	}
+
 	public function test_getPostPaginationLinks()
 	{
 		$wp = $this->wp();
@@ -108,28 +134,31 @@ class UtilityTest extends UnitTestCase
 <a class=\"next page-numbers\" href=\"http://default.localhost.com/page/4/\">NEXT</a>");
 
 		$u = new Utility($wp);
-		$links = $u->getPostPaginationLinks();
+		$links = $u->getPostPaginationLinks([
+			'prev_text' => 'Previous',
+			'next_text' => 'Next'
+		]);
 		$this->assertSame(9, count($links));
+		$this->assertSame('[PREV][Previous][http://default.localhost.com/page/2/]', $this->strNavLink($links[0]));
+		$this->assertSame('[PAGE][1][http://default.localhost.com/]', $this->strNavLink($links[1]));
+		$this->assertSame('[PAGE][2][http://default.localhost.com/page/2/]', $this->strNavLink($links[2]));
+		$this->assertSame('[CURRENT][3][]', $this->strNavLink($links[3]));
+		$this->assertSame('[PAGE][4][http://default.localhost.com/page/4/]', $this->strNavLink($links[4]));
+		$this->assertSame('[PAGE][5][http://default.localhost.com/page/5/]', $this->strNavLink($links[5]));
+		$this->assertSame('[ELLIPSIS][][]', $this->strNavLink($links[6]));
+		$this->assertSame('[PAGE][8][http://default.localhost.com/page/8/]', $this->strNavLink($links[7]));
+		$this->assertSame('[NEXT][Next][http://default.localhost.com/page/4/]', $this->strNavLink($links[8]));
+	}
 
-		$printLink = function(NavLink $link) {
-			$t = '';
-			switch ($link->type) {
-				case NavLink::PAGE: $t = 'PAGE'; break;
-				case NavLink::PREV: $t = 'PREV'; break;
-				case NavLink::NEXT: $t = 'NEXT'; break;
-				case NavLink::CURRENT: $t = 'CURRENT'; break;
-				case NavLink::ELLIPSIS: $t = 'ELLIPSIS'; break;
-			}
-			return sprintf('[%s][%s][%s]', $t, $link->text, $link->href);
-		};
-		$this->assertSame('[PREV][][http://default.localhost.com/page/2/]', $printLink($links[0]));
-		$this->assertSame('[PAGE][1][http://default.localhost.com/]', $printLink($links[1]));
-		$this->assertSame('[PAGE][2][http://default.localhost.com/page/2/]', $printLink($links[2]));
-		$this->assertSame('[CURRENT][3][]', $printLink($links[3]));
-		$this->assertSame('[PAGE][4][http://default.localhost.com/page/4/]', $printLink($links[4]));
-		$this->assertSame('[PAGE][5][http://default.localhost.com/page/5/]', $printLink($links[5]));
-		$this->assertSame('[ELLIPSIS][][]', $printLink($links[6]));
-		$this->assertSame('[PAGE][8][http://default.localhost.com/page/8/]', $printLink($links[7]));
-		$this->assertSame('[NEXT][][http://default.localhost.com/page/4/]', $printLink($links[8]));
+	private function strNavLink(NavLink $link) {
+		$t = '';
+		switch ($link->type) {
+			case NavLink::PAGE: $t = 'PAGE'; break;
+			case NavLink::PREV: $t = 'PREV'; break;
+			case NavLink::NEXT: $t = 'NEXT'; break;
+			case NavLink::CURRENT: $t = 'CURRENT'; break;
+			case NavLink::ELLIPSIS: $t = 'ELLIPSIS'; break;
+		}
+		return sprintf('[%s][%s][%s]', $t, $link->text, $link->href);
 	}
 }

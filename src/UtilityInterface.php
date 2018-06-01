@@ -40,6 +40,22 @@ interface UtilityInterface
 	public function getMenuItem($idOrLocation) : MenuItem;
 
 	/**
+	 * Returns a list of paginated post links.
+	 * See wp_link_pages for the arguemtn usage.
+	 * @param array $args
+	 * @return NavLink[]
+	 */
+	public function getPaginatedPostLinks(array $args = []);
+
+	/**
+	 * Returns a list of post pagination links.
+	 * See paginate_links for the argument usage.
+	 * @param array $args
+	 * @return NavLink[]
+	 */
+	public function getPostPaginationLinks(array $args = []);
+
+	/**
 	 * @codeCoverageIgnore
 	 * Reduce unnecessary WordPress default stuff in <head> tag.
 	 * @param array $args

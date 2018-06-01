@@ -221,14 +221,67 @@ class Utility implements UtilityInterface
 	}
 
 	/**
+	 * Returns a list of paginated post links.
+	 * See wp_link_pages for the arguemtn usage.
+	 * @param array $args
+	 * @return NavLink[]
+	 */
+	public function getPaginatedPostLinks(array $args = [])
+	{
+		$prevNext = array_merge([
+			'nextpagelink' => $this->wp->__('Next page'),
+			'previouspagelink' => $this->wp->__('Previous page')
+		], $args);
+		$args = array_merge($args, [
+			'before' => '',
+			'after' => '',
+			'link_before' => '<span>',
+			'link_after' => '</span>',
+			'nextpagelink' => 'NEXT',
+			'previouspagelink' => 'PREV',
+			'echo' => false
+		]);
+		wp_link_pages();
+		$output = $this->wp->wp_link_pages($args);
+		$pLinks = [];
+		if ($output) {
+			$dom = new HTML5DOMDocument();
+			$dom->loadHTML($output);
+			$eBody = $dom->querySelector('body');
+			foreach ($eBody->childNodes as $n) {
+				if ($n->nodeType !== XML_ELEMENT_NODE) continue;
+				$e = Type::DomElement($n);
+				if ($e->tagName === 'a') {
+					$href = $e->getAttribute('href');
+					$text = $e->childNodes->item(0)->innerHTML;
+					$type = NavLink::PAGE;
+					if ($text === 'NEXT') {
+						$type = NavLink::NEXT;
+						$text = $prevNext['nextpagelink'];
+					} else if ($text === 'PREV') {
+						$type = NavLink::PREV;
+						$text = $prevNext['previouspagelink'];
+					}
+					$pLinks[] = new NavLink($type, $href, $text);
+				} else if ($e->tagName === 'span') {
+					$pLinks[] = new NavLink(NavLink::CURRENT, null, $e->innerHTML);
+				}
+			}
+		}
+		return $pLinks;
+	}
+
+	/**
 	 * Returns a list of post pagination links.
 	 * See paginate_links for the argument usage.
-	 * @param NavLink[] $args
+	 * @param array $args
+	 * @return NavLink[]
 	 */
 	public function getPostPaginationLinks(array $args = []) {
 		$prevNext = array_merge([
 			'prev_text' => $this->wp->__('Previous'),
-			'next_text' => $this->wp->__('Next')], $args);
+			'next_text' => $this->wp->__('Next')
+		], $args);
 		$args = array_merge($args, [
 			'prev_text' => 'PREV',
 			'next_text' => 'NEXT',
@@ -236,15 +289,15 @@ class Utility implements UtilityInterface
 			'before_page_number' => '',
 			'after_page_number' => ''
 		]);
-		
-		$links = $this->wp->paginate_links($args);
+
+		$output = $this->wp->paginate_links($args);
 		$pLinks = [];
-		if ($links) {
+		if ($output) {
 			$dom = new HTML5DOMDocument();
-			$dom->loadHTML($links);
+			$dom->loadHTML($output);
 			$eBody = $dom->querySelector('body');
 			foreach ($eBody->childNodes as $n) {
-				if ($n->nodeType != XML_ELEMENT_NODE) continue;
+				if ($n->nodeType !== XML_ELEMENT_NODE) continue;
 				$e = Type::DomElement($n);
 				$text = $e->innerHTML;
 				if ($e->tagName === 'a') {
