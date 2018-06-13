@@ -18,14 +18,44 @@ class WpContext implements WpContextInterface
 		return \add_filter($tag, $function_to_add, $priority, $accepted_args);
 	}
 
+	public function comments_open($post_id = null)
+	{
+		return \comments_open($post_id);
+	}
+
+	public function get_avatar($id_or_email, $size = 96, $default = '', $alt = '', $args = null)
+	{
+		return \get_avatar($id_or_email, $size, $default, $alt, $args);
+	}
+
+	public function get_comments_number($post_id = 0)
+	{
+		return \get_comments_number($post_id);
+	}
+
 	public function get_nav_menu_locations()
 	{
 		return \get_nav_menu_locations();
 	}
 
+	public function get_post_type($post = null)
+	{
+		return \get_post_type($post);
+	}
+
 	public function paginate_links($args = '')
 	{
 		return \paginate_links($args);
+	}
+
+	public function post_password_required($post = null)
+	{
+		return \post_password_required($post);
+	}
+
+	public function post_type_supports($post_type, $feature)
+	{
+		return \post_type_supports($post_type, $feature);
 	}
 
 	public function remove_action($tag, $function_to_remove, $priority = 10)
@@ -52,6 +82,12 @@ class WpContext implements WpContextInterface
 	{
 		return \wp_link_pages($args);
 	}
+
+	public function wp_list_comments($args = array(), $comments = null)
+	{
+		return \wp_list_comments($args, $comments);
+	}
+
 
 	public function wp_register_script($handle, $src, $deps = array(), $ver = false, $in_footer = false)
 	{

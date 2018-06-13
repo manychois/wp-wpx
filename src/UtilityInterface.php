@@ -17,6 +17,16 @@ interface UtilityInterface
 	public function findAspectRatio(int $width, int $height) : string;
 
 	/**
+	 * Retrieve all comment information from WordPress functions.
+	 * It must be called within the tempalte file comments.php
+	 * @param array $args
+	 *     Optional. Array of arguments.
+	 *     "avatar_size" int Size that the avatar should be shown as, in pixels. Default 32.
+	 * @return CommentsInfo
+	 */
+	public function getCommentsInfo(array $args = []) : CommentsInfo;
+
+	/**
 	 * Safe get the value from $_GET. The value is stripped to undo WordPress default slash insertion.
 	 * @param string $name    Name of the variable.
 	 * @param mixed  $default Value when the name is not found. Default null.

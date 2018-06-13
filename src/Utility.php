@@ -48,7 +48,7 @@ class Utility implements UtilityInterface
 	 * @param int $height Height of the media.
 	 * @return string Returns the closest aspect ratio to the specified width and height.
 	 */
-	function findAspectRatio(int $width, int $height) : string
+	public function findAspectRatio(int $width, int $height) : string
 	{
 		if ($width === 0 || $height === 0) return '';
 		$ratio = $width / $height;
@@ -80,6 +80,59 @@ class Utility implements UtilityInterface
 			$aspectRatio = '';
 		}
 		return $aspectRatio;
+	}
+
+	/**
+	 * Retrieve all comment information from WordPress functions.
+	 * It must be called within the tempalte file comments.php
+	 * @param array $args
+	 *     Optional. Array of arguments.
+	 *     "avatar_size" int Size that the avatar should be shown as, in pixels. Default 32.
+	 * @return CommentsInfo
+	 */
+	public function getCommentsInfo(array $args = []) : CommentsInfo {
+		$wp = $this->wp;
+		$args = array_merge(['avatar_size' => 32], $args);
+		$avatarSize = intval($args['avatar_size']);
+		$cInfo = new CommentsInfo();
+		$cInfo->commentCount = $wp->get_comments_number();
+		$cInfo->isCommentAllowed = $wp->comments_open();
+		$cInfo->isCommentSupported = $wp->post_type_supports($wp->get_post_type(), 'comments');
+		$cInfo->isPasswordRequired = $wp->post_password_required();
+
+		$commentLookup = [];
+		$commentLookup[0] = $cInfo->topComment;
+		$parentIdLookup = [];
+		$callback = function($comment, $args, $depth) use ($wp, $avatarSize, &$commentLookup, &$parentIdLookup) {
+			$c = new Comment();
+			$c->id = $comment->comment_ID;
+			if ($comment->comment_parent === 0) {
+				$c->parent = $commentLookup[0];
+				$commentLookup[0]->children[] = $c;
+			} else {
+				$parentIdLookup[$c->id] = $comment->comment_parent;
+			}
+			$c->isApproved = $comment->comment_approved != '0';
+			$c->content = $comment->comment_content;
+			$c->time = $comment->comment_date;
+			$c->timeUtc = $comment->comment_date_gmt;
+			$c->author = new CommentAuthor();
+			$c->author->name = $comment->comment_author;
+			$c->author->email = $comment->comment_author_email;
+			$c->author->url = $comment->comment_author_url;
+			$c->author->ip = $comment->comment_author_IP;
+			$c->author->avatarHtml = $wp->get_avatar($comment, $avatarSize);
+			$c->depth = $depth;
+			$commentLookup[$c->id] = $c;
+		};
+		$wp->wp_list_comments(['callback' => $callback]);
+		foreach ($parentIdLookup as $cId => $pId) {
+			$commentLookup[$cId]->parent = $commentLookup[$pId];
+			$commentLookup[$pId]->children[] = $commentLookup[$cId];
+		}
+		unset($commentLookup);
+		unset($parentIdLookup);
+		return $cInfo;
 	}
 
 	/**

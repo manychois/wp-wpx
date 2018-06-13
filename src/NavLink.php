@@ -6,11 +6,11 @@ namespace Manychois\Wpx;
  */
 class NavLink
 {
-	public const PAGE = 0;
-	public const PREV = 1;
-	public const NEXT = 2;
-	public const CURRENT = 3;
-	public const ELLIPSIS = 4;
+	const PAGE = 0;
+	const PREV = 1;
+	const NEXT = 2;
+	const CURRENT = 3;
+	const ELLIPSIS = 4;
 
 	/**
 	 * Constrcut a pagination link.
