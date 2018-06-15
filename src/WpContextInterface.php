@@ -24,7 +24,9 @@ interface WpContextInterface
 
 	public function get_post_type($post = null);
 
-	public function paginate_links( $args = '' );
+	public function paginate_comments_links($args = array());
+
+	public function paginate_links($args = '');
 
 	public function post_password_required($post = null);
 

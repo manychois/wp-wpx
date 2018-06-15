@@ -43,6 +43,11 @@ class WpContext implements WpContextInterface
 		return \get_post_type($post);
 	}
 
+	public function paginate_comments_links($args = array())
+	{
+		return \paginate_comments_links($args);
+	}
+
 	public function paginate_links($args = '')
 	{
 		return \paginate_links($args);

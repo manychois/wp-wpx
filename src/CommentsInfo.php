@@ -34,6 +34,12 @@ class CommentsInfo
 	 */
 	public $topComment;
 
+	/**
+	 * Comment pagination links.
+	 * @var NavLink[]
+	 */
+	public $paginationLinks;
+
 	public function __construct()
 	{
 		$this->commentCount = 0;
@@ -41,5 +47,6 @@ class CommentsInfo
 		$this->isCommentSupported = false;
 		$this->isPasswordRequired = false;
 		$this->topComment = new Comment();
+		$this->paginationLinks = [];
 	}
 }

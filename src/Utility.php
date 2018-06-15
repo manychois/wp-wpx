@@ -87,12 +87,16 @@ class Utility implements UtilityInterface
 	 * It must be called within the tempalte file comments.php
 	 * @param array $args
 	 *     Optional. Array of arguments.
-	 *     "avatar_size" int Size that the avatar should be shown as, in pixels. Default 32.
+	 *     "avatar_size" int Size that the avatar should be shown as, in pixels. Default is 32.
+	 *     "max_depth"   int The maximum comments depth. 0 for no restriction. Negative value for depth value set in admin screen. Default is -1.
 	 * @return CommentsInfo
 	 */
 	public function getCommentsInfo(array $args = []) : CommentsInfo {
 		$wp = $this->wp;
-		$args = array_merge(['avatar_size' => 32], $args);
+		$args = array_merge([
+			'avatar_size' => 32,
+			'max_depth' => -1
+		], $args);
 		$avatarSize = intval($args['avatar_size']);
 		$cInfo = new CommentsInfo();
 		$cInfo->commentCount = $wp->get_comments_number();
@@ -100,18 +104,11 @@ class Utility implements UtilityInterface
 		$cInfo->isCommentSupported = $wp->post_type_supports($wp->get_post_type(), 'comments');
 		$cInfo->isPasswordRequired = $wp->post_password_required();
 
-		$commentLookup = [];
-		$commentLookup[0] = $cInfo->topComment;
-		$parentIdLookup = [];
-		$callback = function($comment, $args, $depth) use ($wp, $avatarSize, &$commentLookup, &$parentIdLookup) {
+		$parent = $cInfo->topComment;
+		$prevComment = null;
+		$callback = function($comment, $args, $depth) use (&$wp, $avatarSize, &$parent, &$prevComment) {
 			$c = new Comment();
 			$c->id = $comment->comment_ID;
-			if ($comment->comment_parent === 0) {
-				$c->parent = $commentLookup[0];
-				$commentLookup[0]->children[] = $c;
-			} else {
-				$parentIdLookup[$c->id] = $comment->comment_parent;
-			}
 			$c->isApproved = $comment->comment_approved != '0';
 			$c->content = $comment->comment_content;
 			$c->time = $comment->comment_date;
@@ -123,15 +120,19 @@ class Utility implements UtilityInterface
 			$c->author->ip = $comment->comment_author_IP;
 			$c->author->avatarHtml = $wp->get_avatar($comment, $avatarSize);
 			$c->depth = $depth;
-			$commentLookup[$c->id] = $c;
+			$diff = $c->depth - $parent->depth;
+			if ($diff === 0) {
+				$parent = $parent->parent;
+			} elseif ($diff === 2) {
+				$parent = $prevComment;
+			}
+			$c->parent = $parent;
+			$parent->children[] = $c;
+			$prevComment = $c;
 		};
+
 		$wp->wp_list_comments(['callback' => $callback]);
-		foreach ($parentIdLookup as $cId => $pId) {
-			$commentLookup[$cId]->parent = $commentLookup[$pId];
-			$commentLookup[$pId]->children[] = $commentLookup[$cId];
-		}
-		unset($commentLookup);
-		unset($parentIdLookup);
+		$cInfo->paginationLinks = $this->getCommentPaginationLinks();
 		return $cInfo;
 	}
 
@@ -493,6 +494,58 @@ class Utility implements UtilityInterface
 	}
 
 	#endregion
+
+	/**
+	 * Returns a list of comment pagination links.
+	 * See paginate_links for the argument usage.
+	 * @param array $args
+	 * @return NavLink[]
+	 */
+	private function getCommentPaginationLinks(array $args = []) {
+		$prevNext = array_merge([
+			'prev_text' => $this->wp->__('Previous'),
+			'next_text' => $this->wp->__('Next')
+		], $args);
+		$args = array_merge($args, [
+			'prev_text' => 'PREV',
+			'next_text' => 'NEXT',
+			'type' => '',
+			'before_page_number' => '',
+			'after_page_number' => '',
+			'echo' => false
+		]);
+
+		$output = $this->wp->paginate_comments_links($args);
+		$pLinks = [];
+		if ($output) {
+			$dom = new HTML5DOMDocument();
+			$dom->loadHTML($output);
+			$eBody = $dom->querySelector('body');
+			foreach ($eBody->childNodes as $n) {
+				if ($n->nodeType !== XML_ELEMENT_NODE) continue;
+				$e = Type::DomElement($n);
+				$text = $e->innerHTML;
+				if ($e->tagName === 'a') {
+					$href = $e->getAttribute('href');
+					if ($text === 'PREV') {
+						$pLinks[] = new NavLink(NavLink::PREV, $href, $prevNext['prev_text']);
+					} else if ($text === 'NEXT') {
+						$pLinks[] = new NavLink(NavLink::NEXT, $href, $prevNext['next_text']);
+					} else {
+						$pLinks[] = new NavLink(NavLink::PAGE, $href, $text);
+					}
+				} else if ($e->tagName === 'span') {
+					$class = $e->getAttribute('class');
+					if (strpos($class, 'dots') !== false) {
+						$pLinks[] = new NavLink(NavLink::ELLIPSIS);
+					} else if (strpos($class, 'current') !== false) {
+						$pLinks[] = new NavLink(NavLink::CURRENT, null, $text);
+					}
+				}
+			}
+		}
+		return $pLinks;
+	}
 
 	#region WordPress hooks
 

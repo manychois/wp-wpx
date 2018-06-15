@@ -21,7 +21,8 @@ interface UtilityInterface
 	 * It must be called within the tempalte file comments.php
 	 * @param array $args
 	 *     Optional. Array of arguments.
-	 *     "avatar_size" int Size that the avatar should be shown as, in pixels. Default 32.
+	 *     "avatar_size" int Size that the avatar should be shown as, in pixels. Default is 32.
+	 *     "max_depth"   int The maximum comments depth. 0 for no restriction. Negative value for depth value set in admin screen. Default is -1.
 	 * @return CommentsInfo
 	 */
 	public function getCommentsInfo(array $args = []) : CommentsInfo;
