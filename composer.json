@@ -2,6 +2,7 @@
 	"name": "manychois/wp-wpx",
 	"description": "A utility library for overriding WordPress default HTML output easily",
 	"keywords": [ "wordpress" ],
+	"type": "library",
 	"license": "MIT",
 	"authors": [
 		{

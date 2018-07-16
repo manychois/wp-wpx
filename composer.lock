@@ -8,29 +8,30 @@
     "packages": [
         {
             "name": "ivopetkov/html5-dom-document-php",
-            "version": "v0.5.9",
+            "version": "v0.6.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ivopetkov/html5-dom-document-php.git",
-                "reference": "86a6e417e367b8e32747771d6e7e70a685ba1755"
+                "reference": "41f17db82efb7b02130195b5238221fd2582b870"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ivopetkov/html5-dom-document-php/zipball/86a6e417e367b8e32747771d6e7e70a685ba1755",
-                "reference": "86a6e417e367b8e32747771d6e7e70a685ba1755",
+                "url": "https://api.github.com/repos/ivopetkov/html5-dom-document-php/zipball/41f17db82efb7b02130195b5238221fd2582b870",
+                "reference": "41f17db82efb7b02130195b5238221fd2582b870",
                 "shasum": ""
             },
             "require": {
+                "ext-dom": "*",
                 "php": ">=7.0.0"
             },
             "require-dev": {
-                "phpunit/phpunit": "^4.8"
+                "phpunit/phpunit": "6.*"
             },
             "type": "library",
             "autoload": {
-                "psr-4": {
-                    "IvoPetkov\\": "src/"
-                }
+                "files": [
+                    "autoload.php"
+                ]
             },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
@@ -44,7 +45,7 @@
                 }
             ],
             "description": "HTML5 DOMDocument PHP library (extends DOMDocument)",
-            "time": "2018-04-28T16:04:39+00:00"
+            "time": "2018-07-13T12:41:14+00:00"
         }
     ],
     "packages-dev": [
@@ -144,25 +145,28 @@
         },
         {
             "name": "myclabs/deep-copy",
-            "version": "1.7.0",
+            "version": "1.8.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/myclabs/DeepCopy.git",
-                "reference": "3b8a3a99ba1f6a3952ac2747d989303cbd6b7a3e"
+                "reference": "3e01bdad3e18354c3dce54466b7fbe33a9f9f7f8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/myclabs/DeepCopy/zipball/3b8a3a99ba1f6a3952ac2747d989303cbd6b7a3e",
-                "reference": "3b8a3a99ba1f6a3952ac2747d989303cbd6b7a3e",
+                "url": "https://api.github.com/repos/myclabs/DeepCopy/zipball/3e01bdad3e18354c3dce54466b7fbe33a9f9f7f8",
+                "reference": "3e01bdad3e18354c3dce54466b7fbe33a9f9f7f8",
                 "shasum": ""
             },
             "require": {
-                "php": "^5.6 || ^7.0"
+                "php": "^7.1"
+            },
+            "replace": {
+                "myclabs/deep-copy": "self.version"
             },
             "require-dev": {
                 "doctrine/collections": "^1.0",
                 "doctrine/common": "^2.6",
-                "phpunit/phpunit": "^4.1"
+                "phpunit/phpunit": "^7.1"
             },
             "type": "library",
             "autoload": {
@@ -185,7 +189,7 @@
                 "object",
                 "object graph"
             ],
-            "time": "2017-10-19T19:58:43+00:00"
+            "time": "2018-06-11T23:09:50+00:00"
         },
         {
             "name": "phar-io/manifest",
@@ -755,16 +759,16 @@
         },
         {
             "name": "phpunit/phpunit",
-            "version": "6.5.8",
+            "version": "6.5.9",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "4f21a3c6b97c42952fd5c2837bb354ec0199b97b"
+                "reference": "093ca5508174cd8ab8efe44fd1dde447adfdec8f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/4f21a3c6b97c42952fd5c2837bb354ec0199b97b",
-                "reference": "4f21a3c6b97c42952fd5c2837bb354ec0199b97b",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/093ca5508174cd8ab8efe44fd1dde447adfdec8f",
+                "reference": "093ca5508174cd8ab8efe44fd1dde447adfdec8f",
                 "shasum": ""
             },
             "require": {
@@ -835,20 +839,20 @@
                 "testing",
                 "xunit"
             ],
-            "time": "2018-04-10T11:38:34+00:00"
+            "time": "2018-07-03T06:40:40+00:00"
         },
         {
             "name": "phpunit/phpunit-mock-objects",
-            "version": "5.0.6",
+            "version": "5.0.8",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit-mock-objects.git",
-                "reference": "33fd41a76e746b8fa96d00b49a23dadfa8334cdf"
+                "reference": "6f9a3c8bf34188a2b53ce2ae7a126089c53e0a9f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit-mock-objects/zipball/33fd41a76e746b8fa96d00b49a23dadfa8334cdf",
-                "reference": "33fd41a76e746b8fa96d00b49a23dadfa8334cdf",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit-mock-objects/zipball/6f9a3c8bf34188a2b53ce2ae7a126089c53e0a9f",
+                "reference": "6f9a3c8bf34188a2b53ce2ae7a126089c53e0a9f",
                 "shasum": ""
             },
             "require": {
@@ -894,7 +898,7 @@
                 "mock",
                 "xunit"
             ],
-            "time": "2018-01-06T05:45:45+00:00"
+            "time": "2018-07-13T03:27:23+00:00"
         },
         {
             "name": "sebastian/code-unit-reverse-lookup",
