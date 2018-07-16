@@ -12,7 +12,8 @@
 	],
 	"require": {
 		"php": ">=7.0",
-		"ivopetkov/html5-dom-document-php": "0.*"
+		"manychois/views": ">=0.1.0",
+		"ivopetkov/html5-dom-document-php": ">=0.6.1"
 	},
 	"require-dev": {
 		"php": ">=7.0",
@@ -24,5 +25,8 @@
 	},
 	"autoload-dev": {
 		"psr-4": { "Manychois\\Wpx\\Tests\\": "tests/" }
+	},
+	"scripts": {
+		"unit-test":  "vendor/bin/phpunit"
 	}
 }

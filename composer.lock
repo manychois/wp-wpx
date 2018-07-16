@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "b3c3aee5c68b0b95ce76ad6de47d3ab6",
+    "content-hash": "3c9f0c171fdb997bd10b6de86ef20aee",
     "packages": [
         {
             "name": "ivopetkov/html5-dom-document-php",
@@ -46,6 +46,49 @@
             ],
             "description": "HTML5 DOMDocument PHP library (extends DOMDocument)",
             "time": "2018-07-13T12:41:14+00:00"
+        },
+        {
+            "name": "manychois/views",
+            "version": "v0.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/manychois/php-views.git",
+                "reference": "4c1498bfd4593217bbc2c35976feb2dc65f06e36"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/manychois/php-views/zipball/4c1498bfd4593217bbc2c35976feb2dc65f06e36",
+                "reference": "4c1498bfd4593217bbc2c35976feb2dc65f06e36",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.0"
+            },
+            "require-dev": {
+                "php": ">=7.0",
+                "phpunit/phpunit": "*"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Manychois\\Views\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Siu Pang Tommy Choi",
+                    "email": "manychois@gmail.com"
+                }
+            ],
+            "description": "A naive PHP template library",
+            "keywords": [
+                "template"
+            ],
+            "time": "2018-06-26T13:43:21+00:00"
         }
     ],
     "packages-dev": [
