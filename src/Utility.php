@@ -295,7 +295,6 @@ class Utility implements UtilityInterface
 			'previouspagelink' => 'PREV',
 			'echo' => false
 		]);
-		wp_link_pages();
 		$output = $this->wp->wp_link_pages($args);
 		$pLinks = [];
 		if ($output) {
