@@ -22,7 +22,11 @@ interface WpContextInterface
 
 	public function get_nav_menu_locations();
 
+    public function get_option($option, $default = false);
+
 	public function get_post_type($post = null);
+
+    public function get_the_ID();
 
 	public function paginate_comments_links($args = array());
 

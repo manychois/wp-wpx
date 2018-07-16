@@ -11,6 +11,11 @@ class CommentsInfo
 	 * @var int
 	 */
 	public $commentCount;
+    /**
+     * Comment form.
+     * @var null|CommentForm
+     */
+    public $commentForm;
 	/**
 	 * Whether the post is open for comments.
 	 * @var mixed
@@ -43,6 +48,7 @@ class CommentsInfo
 	public function __construct()
 	{
 		$this->commentCount = 0;
+        $this->commentForm = null;
 		$this->isCommentAllowed = false;
 		$this->isCommentSupported = false;
 		$this->isPasswordRequired = false;

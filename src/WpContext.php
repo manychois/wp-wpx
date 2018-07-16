@@ -33,6 +33,16 @@ class WpContext implements WpContextInterface
 		return \get_comments_number($post_id);
 	}
 
+    public function get_option($option, $default = false)
+    {
+        return \get_option($option, $default);
+    }
+
+    public function get_the_ID()
+    {
+        return \get_the_ID();
+    }
+
 	public function get_nav_menu_locations()
 	{
 		return \get_nav_menu_locations();

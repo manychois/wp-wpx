@@ -1,11 +1,9 @@
 <?php
 namespace Manychois\Wpx;
-
+use IvoPetkov\HTML5DOMDocument;
 /**
  * A utility library for overriding WordPress default HTML output easily.
  */
-
-use IvoPetkov\HTML5DOMDocument;
 class Utility implements UtilityInterface
 {
 	/**
@@ -131,8 +129,66 @@ class Utility implements UtilityInterface
 			$prevComment = $c;
 		};
 
-		$wp->wp_list_comments(['callback' => $callback]);
+		$wp->wp_list_comments(['callback' => $callback, 'end-callback' => '__return_empty_string']);
 		$cInfo->paginationLinks = $this->getCommentPaginationLinks();
+
+        if ($cInfo->isCommentAllowed && $cInfo->isCommentSupported && !$cInfo->isPasswordRequired) {
+            $cInfo->commentForm = new CommentForm();
+            $requireNameEmail = $wp->get_option('require_name_email');
+            $authorInput = (new TagBuilder('input'))->setAttr([
+                'name' => 'author',
+                'type' => 'text',
+                'maxlength' => '245'
+            ]);
+            if ($requireNameEmail) $authorInput->setAttr(['required']);
+            $cInfo->commentForm->inputFields['author'] = $authorInput;
+
+            $emailInput = (new TagBuilder('input'))->setAttr([
+                'name' => 'email',
+                'type' => 'email',
+                'maxlength' => '100'
+            ]);
+            if ($requireNameEmail) $emailInput->setAttr(['required']);
+            $cInfo->commentForm->inputFields['email'] = $emailInput;
+
+            $urlInput = (new TagBuilder('input'))->setAttr([
+                'name' => 'url',
+                'type' => 'url',
+                'maxlength' => '200'
+            ]);
+            $cInfo->commentForm->inputFields['url'] = $urlInput;
+
+            $cookiesInput = (new TagBuilder('input'))->setAttr([
+                'name' => 'wp-comment-cookies-consent',
+                'type' => 'checkbox',
+                'value' => 'yes'
+            ]);
+            $cInfo->commentForm->inputFields['wp-comment-cookies-consent'] = $cookiesInput;
+
+            $commentInput = (new TagBuilder('textarea'))->setAttr([
+                'name' => 'comment',
+                'maxlength' => 65525,
+                'required'
+            ]);
+            $commentInput->append('');
+            $cInfo->commentForm->inputFields['comment'] = $commentInput;
+
+            $hiddenPostId = (new TagBuilder('input'))->setAttr([
+                'name' => 'comment_post_ID',
+                'type' => 'hidden',
+                'value' => $wp->get_the_ID()
+            ]);
+            $cInfo->commentForm->hiddenFields['comment_post_ID'] = $hiddenPostId;
+
+            $replyToId = intval($this->getFromGet('replytocom', '0'));
+            $hiddenParentId = (new TagBuilder('input'))->setAttr([
+                'name' => 'comment_parent',
+                'type' => 'hidden',
+                'value' => $replyToId
+            ]);
+            $cInfo->commentForm->hiddenFields['comment_parent'] = $hiddenParentId;
+        }
+
 		return $cInfo;
 	}
 
