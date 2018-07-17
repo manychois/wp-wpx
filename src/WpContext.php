@@ -53,6 +53,11 @@ class WpContext implements WpContextInterface
 		return \get_post_type($post);
 	}
 
+    public function is_user_logged_in()
+    {
+        return \is_user_logged_in();
+    }
+
 	public function paginate_comments_links($args = array())
 	{
 		return \paginate_comments_links($args);
@@ -82,6 +87,11 @@ class WpContext implements WpContextInterface
 	{
 		return \stripslashes_deep($value);
 	}
+
+    public function wp_get_current_commenter()
+    {
+        return \wp_get_current_commenter();
+    }
 
 	public function wp_get_nav_menu_items($menu, $args = array())
 	{
@@ -115,8 +125,8 @@ class WpContext implements WpContextInterface
 	}
 
 	/**
-	 * @return \WP_Query
-	 */
+     * @return \WP_Query
+     */
 	public function get_global_wp_query()
 	{
 		global $wp_query;
@@ -124,8 +134,8 @@ class WpContext implements WpContextInterface
 	}
 
 	/**
-	 * @return \wpdb
-	 */
+     * @return \wpdb
+     */
 	public function get_global_wpdb()
 	{
 		global $wpdb;

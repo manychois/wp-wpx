@@ -28,6 +28,8 @@ interface WpContextInterface
 
     public function get_the_ID();
 
+    public function is_user_logged_in();
+
 	public function paginate_comments_links($args = array());
 
 	public function paginate_links($args = '');
@@ -39,6 +41,8 @@ interface WpContextInterface
 	public function remove_action($tag, $function_to_remove, $priority = 10);
 
 	public function stripslashes_deep($value);
+
+    public function wp_get_current_commenter();
 
 	public function wp_get_nav_menu_items($menu, $args = array());
 

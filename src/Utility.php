@@ -1,5 +1,6 @@
 <?php
 namespace Manychois\Wpx;
+use Manychois\Views\Esc;
 use IvoPetkov\HTML5DOMDocument;
 /**
  * A utility library for overriding WordPress default HTML output easily.
@@ -101,6 +102,7 @@ class Utility implements UtilityInterface
 		$cInfo->isCommentAllowed = $wp->comments_open();
 		$cInfo->isCommentSupported = $wp->post_type_supports($wp->get_post_type(), 'comments');
 		$cInfo->isPasswordRequired = $wp->post_password_required();
+        $cInfo->isRegistrationRequired = boolval($wp->get_option('comment_registration'));
 
 		$parent = $cInfo->topComment;
 		$prevComment = null;
@@ -132,38 +134,47 @@ class Utility implements UtilityInterface
 		$wp->wp_list_comments(['callback' => $callback, 'end-callback' => '__return_empty_string']);
 		$cInfo->paginationLinks = $this->getCommentPaginationLinks();
 
-        if ($cInfo->isCommentAllowed && $cInfo->isCommentSupported && !$cInfo->isPasswordRequired) {
+        $askForLogin = $cInfo->isRegistrationRequired && !$wp->is_user_logged_in();
+        if ($cInfo->isCommentAllowed && $cInfo->isCommentSupported && !$cInfo->isPasswordRequired && !$askForLogin) {
             $cInfo->commentForm = new CommentForm();
-            $requireNameEmail = $wp->get_option('require_name_email');
-            $authorInput = (new TagBuilder('input'))->setAttr([
-                'name' => 'author',
-                'type' => 'text',
-                'maxlength' => '245'
-            ]);
-            if ($requireNameEmail) $authorInput->setAttr(['required']);
-            $cInfo->commentForm->inputFields['author'] = $authorInput;
+            if (!$wp->is_user_logged_in()) {
+                $commentCookies = $wp->wp_get_current_commenter();
+                $requireNameEmail = $wp->get_option('require_name_email');
 
-            $emailInput = (new TagBuilder('input'))->setAttr([
-                'name' => 'email',
-                'type' => 'email',
-                'maxlength' => '100'
-            ]);
-            if ($requireNameEmail) $emailInput->setAttr(['required']);
-            $cInfo->commentForm->inputFields['email'] = $emailInput;
+                $authorInput = (new TagBuilder('input'))->setAttr([
+                    'name' => 'author',
+                    'type' => 'text',
+                    'maxlength' => '245',
+                    'value' => Esc::html($commentCookies['comment_author'])
+                ]);
+                if ($requireNameEmail) $authorInput->setAttr(['required']);
+                $cInfo->commentForm->inputFields['author'] = $authorInput;
 
-            $urlInput = (new TagBuilder('input'))->setAttr([
-                'name' => 'url',
-                'type' => 'url',
-                'maxlength' => '200'
-            ]);
-            $cInfo->commentForm->inputFields['url'] = $urlInput;
+                $emailInput = (new TagBuilder('input'))->setAttr([
+                    'name' => 'email',
+                    'type' => 'email',
+                    'maxlength' => '100',
+                    'value' => Esc::html($commentCookies['comment_author_email'])
+                ]);
+                if ($requireNameEmail) $emailInput->setAttr(['required']);
+                $cInfo->commentForm->inputFields['email'] = $emailInput;
 
-            $cookiesInput = (new TagBuilder('input'))->setAttr([
-                'name' => 'wp-comment-cookies-consent',
-                'type' => 'checkbox',
-                'value' => 'yes'
-            ]);
-            $cInfo->commentForm->inputFields['wp-comment-cookies-consent'] = $cookiesInput;
+                $urlInput = (new TagBuilder('input'))->setAttr([
+                    'name' => 'url',
+                    'type' => 'url',
+                    'maxlength' => '200',
+                    'value' => Esc::html($commentCookies['comment_author_url'])
+                ]);
+                $cInfo->commentForm->inputFields['url'] = $urlInput;
+
+                $cookiesInput = (new TagBuilder('input'))->setAttr([
+                    'name' => 'wp-comment-cookies-consent',
+                    'type' => 'checkbox',
+                    'value' => 'yes'
+                ]);
+                if (!empty($commentCookies['comment_author_email'])) $cookiesInput->setAttr(['checked']);
+                $cInfo->commentForm->inputFields['wp-comment-cookies-consent'] = $cookiesInput;
+            }
 
             $commentInput = (new TagBuilder('textarea'))->setAttr([
                 'name' => 'comment',

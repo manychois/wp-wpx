@@ -32,6 +32,11 @@ class CommentsInfo
 	 * @var bool
 	 */
 	public $isPasswordRequired;
+    /**
+     * Whether only registered users can comment.
+     * @var bool
+     */
+    public $isRegistrationRequired;
 
 	/**
 	 * Topmost comment.
@@ -52,6 +57,7 @@ class CommentsInfo
 		$this->isCommentAllowed = false;
 		$this->isCommentSupported = false;
 		$this->isPasswordRequired = false;
+        $this->isRegistrationRequired = false;
 		$this->topComment = new Comment();
 		$this->paginationLinks = [];
 	}
