@@ -23,10 +23,20 @@ class WpContext implements WpContextInterface
 		return \comments_open($post_id);
 	}
 
+    public function get_attachment_link($post = null, $leavename = false)
+    {
+        return \get_attachment_link($post, $leavename);
+    }
+
 	public function get_avatar($id_or_email, $size = 96, $default = '', $alt = '', $args = null)
 	{
 		return \get_avatar($id_or_email, $size, $default, $alt, $args);
 	}
+
+    public function get_children($args = '', $output = 'OBJECT')
+    {
+        return \get_children($args, $output);
+    }
 
 	public function get_comments_number($post_id = 0)
 	{
@@ -38,6 +48,26 @@ class WpContext implements WpContextInterface
         return \get_option($option, $default);
     }
 
+    public function get_post($post = null, $output = 'OBJECT', $filter = 'raw')
+    {
+        return \get_post($post, $output, $filter);
+    }
+
+    public function get_post_meta($post_id, $key = '', $single = false)
+    {
+        return \get_post_meta($post_id, $key, $single);
+    }
+
+    public function get_post_type($post = null)
+	{
+		return \get_post_type($post);
+	}
+
+    public function get_posts($args = null)
+    {
+        return \get_posts($args);
+    }
+
     public function get_the_ID()
     {
         return \get_the_ID();
@@ -46,11 +76,6 @@ class WpContext implements WpContextInterface
 	public function get_nav_menu_locations()
 	{
 		return \get_nav_menu_locations();
-	}
-
-	public function get_post_type($post = null)
-	{
-		return \get_post_type($post);
 	}
 
     public function is_user_logged_in()
@@ -83,6 +108,11 @@ class WpContext implements WpContextInterface
 		return \remove_action($tag, $function_to_remove, $priority);
 	}
 
+    public function shortcode_atts($pairs, $atts, $shortcode = '')
+    {
+        return \shortcode_atts($pairs, $atts, $shortcode);
+    }
+
 	public function stripslashes_deep($value)
 	{
 		return \stripslashes_deep($value);
@@ -102,6 +132,11 @@ class WpContext implements WpContextInterface
 	{
 		return \wp_get_nav_menu_object($menu);
 	}
+
+    public function wp_get_upload_dir()
+    {
+        return \wp_get_upload_dir();
+    }
 
 	public function wp_link_pages($args = '')
 	{

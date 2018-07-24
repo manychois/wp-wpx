@@ -16,7 +16,11 @@ interface WpContextInterface
 
 	public function comments_open($post_id = null);
 
+    public function get_attachment_link($post = null, $leavename = false);
+
 	public function get_avatar($id_or_email, $size = 96, $default = '', $alt = '', $args = null);
+
+    public function get_children($args = '', $output = 'OBJECT');
 
 	public function get_comments_number($post_id = 0);
 
@@ -24,7 +28,13 @@ interface WpContextInterface
 
     public function get_option($option, $default = false);
 
+    public function get_post($post = null, $output = 'OBJECT', $filter = 'raw');
+
+    public function get_post_meta($post_id, $key = '', $single = false);
+
 	public function get_post_type($post = null);
+
+    public function get_posts($args = null);
 
     public function get_the_ID();
 
@@ -40,6 +50,8 @@ interface WpContextInterface
 
 	public function remove_action($tag, $function_to_remove, $priority = 10);
 
+    public function shortcode_atts($pairs, $atts, $shortcode = '');
+
 	public function stripslashes_deep($value);
 
     public function wp_get_current_commenter();
@@ -47,6 +59,8 @@ interface WpContextInterface
 	public function wp_get_nav_menu_items($menu, $args = array());
 
 	public function wp_get_nav_menu_object($menu);
+
+    public function wp_get_upload_dir();
 
 	public function wp_link_pages($args = '');
 

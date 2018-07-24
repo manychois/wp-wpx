@@ -233,6 +233,89 @@ class Utility implements UtilityInterface
 		}
 	}
 
+    /**
+     * Gets the gallery info based on the parameters in filter post_gallery.
+     * @param mixed $attrs
+     * @param mixed $instance
+     */
+    public function getGallery($attrs, $instance) : Gallery
+    {
+        $wp = $this->wp;
+        $g = new Gallery();
+        $post = $wp->get_post();
+        $atts = $wp->shortcode_atts([
+            'order'      => 'ASC',
+            'orderby'    => 'menu_order ID',
+            'id'         => $post ? $post->ID : 0,
+            'columns'    => 3,
+            'size'       => 'thumbnail',
+            'include'    => '',
+            'exclude'    => '',
+            'link'       => ''
+        ], $attrs, 'gallery');
+        $g->attrs = $atts;
+
+        $id = intval($atts['id']);
+        $attachments = [];
+        if (!empty($atts['include'])) {
+            $_attachments = $wp->get_posts([
+                'include'        => $atts['include'],
+                'post_status'    => 'inherit',
+                'post_type'      => 'attachment',
+                'post_mime_type' => 'image',
+                'order'          => $atts['order'],
+                'orderby'        => $atts['orderby']
+            ]);
+            foreach ($_attachments as $key => $val) {
+                $attachments[$val->ID] = $_attachments[$key];
+            }
+        } elseif (!empty($atts['exclude'])) {
+            $attachments = $wp->get_children([
+                'post_parent'    => $id,
+                'exclude'        => $atts['exclude'],
+                'post_status'    => 'inherit',
+                'post_type'      => 'attachment',
+                'post_mime_type' => 'image',
+                'order'          => $atts['order'],
+                'orderby'        => $atts['orderby']
+            ]);
+        } else {
+            $attachments = $wp->get_children([
+                'post_parent'    => $id,
+                'post_status'    => 'inherit',
+                'post_type'      => 'attachment',
+                'post_mime_type' => 'image',
+                'order'          => $atts['order'],
+                'orderby'        => $atts['orderby']
+            ]);
+        }
+        if (empty($attachments)) return $g;
+
+        $upload_dir = rtrim($wp->wp_get_upload_dir()['baseurl'], '/');
+        foreach ($attachments as $id => $attachment) {
+            $meta = wp_get_attachment_metadata($id);
+            $dirname = _wp_get_attachment_relative_path($meta['file'] );
+            $imageBaseUrl = rtrim("$upload_dir/$dirname", '/');
+            $gi = new GalleryItem();
+            $gi->sizes = $meta['sizes'];
+            foreach ($gi->sizes as &$v) {
+                $v['url'] = $imageBaseUrl . '/' . $v['file'];
+                unset($v['file']);
+            }
+            $gi->id = $id;
+            $gi->alt = $wp->get_post_meta($id, '_wp_attachment_image_alt', true);
+            $gi->caption = $attachment->post_excerpt;
+            $gi->description = $attachment->post_content;
+            $gi->height = intval($meta['height']);
+            $gi->width = intval($meta['width']);
+            $gi->postUrl = $wp->get_attachment_link($id);
+            $gi->title = $attachment->post_title;
+            $gi->url = $upload_dir . '/' . $meta['file'];
+            $g->items[] = $gi;
+        }
+        return $g;
+    }
+
 	/**
 	 * Gets the topmost menu item which contains the whole menu structure.
 	 * @param int|string $idOrLocation Menu id, or name of the theme location.
