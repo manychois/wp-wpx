@@ -525,6 +525,18 @@ class Utility implements UtilityInterface
 		return $pLinks;
 	}
 
+    /**
+     * Returns necessary info to render a search form.
+     */
+    public function getSearchForm() : SearchForm
+    {
+        $wp = $this->wp;
+        $sf = new SearchForm();
+        $sf->action = $wp->home_url('/');
+        $sf->query = $wp->get_search_query(false);
+        return $sf;
+    }
+
 	/**
 	 * Reduces unnecessary WordPress default stuff in <head> tag.
 	 * @param array $args

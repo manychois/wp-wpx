@@ -2,7 +2,7 @@
 Wpx provides an alternative way to override the HTML output in WordPress. Hopefully this will be easier to be worked with, when compared to adding various WP action or filter hooks. It targets to be a utility library used by other WordPress theme or plugin.
 
 ## To-do list
-- Customize search box output.
+- Add helper styles and functions to simplify plugin admin screen development.
 
 ## License
 This project is licensed under MIT License.

@@ -68,6 +68,11 @@ class WpContext implements WpContextInterface
         return \get_posts($args);
     }
 
+    public function get_search_query($escaped = true)
+    {
+        return \get_search_query($escaped);
+    }
+
     public function get_the_ID()
     {
         return \get_the_ID();
@@ -77,6 +82,11 @@ class WpContext implements WpContextInterface
 	{
 		return \get_nav_menu_locations();
 	}
+
+    public function home_url($path = '', $scheme = null)
+    {
+        return \home_url($path, $scheme);
+    }
 
     public function is_user_logged_in()
     {

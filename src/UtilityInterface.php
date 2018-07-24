@@ -43,6 +43,13 @@ interface UtilityInterface
 	 */
 	public function getFromPost(string $name, $default = null);
 
+    /**
+     * Gets the gallery info based on the parameters in filter post_gallery.
+     * @param mixed $attrs
+     * @param mixed $instance
+     */
+    public function getGallery($attrs, $instance) : Gallery;
+
 	/**
 	 * Get the topmost menu item which contains the whole menu structure.
 	 * @param int|string $idOrLocation Menu id, or name of the theme location.
@@ -65,6 +72,11 @@ interface UtilityInterface
 	 * @return NavLink[]
 	 */
 	public function getPostPaginationLinks(array $args = []);
+
+    /**
+     * Returns necessary info to render a search form.
+     */
+    public function getSearchForm() : SearchForm;
 
 	/**
 	 * @codeCoverageIgnore

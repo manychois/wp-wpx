@@ -36,7 +36,11 @@ interface WpContextInterface
 
     public function get_posts($args = null);
 
+    public function get_search_query($escaped = true);
+
     public function get_the_ID();
+
+    public function home_url($path = '', $scheme = null);
 
     public function is_user_logged_in();
 
