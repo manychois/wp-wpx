@@ -12,6 +12,8 @@ interface WpContextInterface
 
 	public function __($text, $domain = 'default');
 
+    public function add_action($tag, $function_to_add, $priority = 10, $accepted_args = 1);
+
 	public function add_filter($tag, $function_to_add, $priority = 10, $accepted_args = 1);
 
 	public function comments_open($post_id = null);
@@ -57,6 +59,8 @@ interface WpContextInterface
     public function shortcode_atts($pairs, $atts, $shortcode = '');
 
 	public function stripslashes_deep($value);
+
+    public function wp_add_inline_style($handle, $data);
 
     public function wp_get_current_commenter();
 

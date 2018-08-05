@@ -33,8 +33,9 @@ class Utility implements UtilityInterface
 	public function activate()
 	{
 		$wp = $this->wp;
-		$wp->add_filter('script_loader_tag', array($this, 'script_loader_tag'), 10, 3);
-		$wp->add_filter('style_loader_tag', array($this, 'style_loader_tag'), 10, 3);
+		$wp->add_filter('script_loader_tag', [$this, 'script_loader_tag'], 10, 3);
+		$wp->add_filter('style_loader_tag', [$this, 'style_loader_tag'], 10, 3);
+        $wp->add_action('admin_enqueue_scripts', [$this, 'admin_enqueue_scripts'], 5);
 	}
 
 	#region Manychois\Wpx\UtilityInterface Members
@@ -656,7 +657,42 @@ class Utility implements UtilityInterface
 
 	#endregion
 
-	/**
+	#region WordPress hooks
+
+    public function admin_enqueue_scripts()
+    {
+        $this->registerStyle('jquery-ui', [
+            'href' => 'https://code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.min.css',
+            'integrity' => 'sha384-A/CgvDCSM2jOpa4G++hlEtzweAjg53uGXJLUnen/qb5faVDcN+vaHrL5czAdzhK8',
+            'crossorigin' => 'anonymous'
+        ]);
+        $this->wp->wp_add_inline_style('jquery-ui', '.ui-widget-overlay{z-index:100000!important;}');
+    }
+
+	public function script_loader_tag(string $tag, string $handle, string $src) : string
+	{
+		if (array_key_exists($handle, $this->scriptAttrs)) {
+			$attrs = $this->scriptAttrs[$handle];
+			$script = $this->newTag('script')->setAttr($attrs)->append('');
+			$oldTag = "<script type='text/javascript' src='$src'></script>";
+			$tag = str_replace($oldTag, $script, $tag);
+		}
+		return $tag;
+	}
+
+	public function style_loader_tag(string $html, string $handle, string $href) : string
+	{
+		if (array_key_exists($handle, $this->styleAttrs)) {
+			$attrs = $this->styleAttrs[$handle];
+			$attrs = array_merge(['rel' => 'stylesheet'], $attrs);
+			$html = $this->newTag('link')->setAttr($attrs) . "\n";
+		}
+		return $html;
+	}
+
+	#endregion
+
+    /**
 	 * Returns a list of comment pagination links.
 	 * See paginate_links for the argument usage.
 	 * @param array $args
@@ -707,29 +743,4 @@ class Utility implements UtilityInterface
 		}
 		return $pLinks;
 	}
-
-	#region WordPress hooks
-
-	public function script_loader_tag(string $tag, string $handle, string $src) : string
-	{
-		if (array_key_exists($handle, $this->scriptAttrs)) {
-			$attrs = $this->scriptAttrs[$handle];
-			$script = $this->newTag('script')->setAttr($attrs)->append('');
-			$oldTag = "<script type='text/javascript' src='$src'></script>";
-			$tag = str_replace($oldTag, $script, $tag);
-		}
-		return $tag;
-	}
-
-	public function style_loader_tag(string $html, string $handle, string $href) : string
-	{
-		if (array_key_exists($handle, $this->styleAttrs)) {
-			$attrs = $this->styleAttrs[$handle];
-			$attrs = array_merge(['rel' => 'stylesheet'], $attrs);
-			$html = $this->newTag('link')->setAttr($attrs) . "\n";
-		}
-		return $html;
-	}
-
-	#endregion
 }

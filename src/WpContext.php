@@ -13,6 +13,11 @@ class WpContext implements WpContextInterface
 		return \__($text, $domain);
 	}
 
+    public function add_action($tag, $function_to_add, $priority = 10, $accepted_args = 1)
+    {
+        return add_action($tag, $function_to_add, $priority, $accepted_args);
+    }
+
 	public function add_filter($tag, $function_to_add, $priority = 10, $accepted_args = 1)
 	{
 		return \add_filter($tag, $function_to_add, $priority, $accepted_args);
@@ -127,6 +132,11 @@ class WpContext implements WpContextInterface
 	{
 		return \stripslashes_deep($value);
 	}
+
+    public function wp_add_inline_style($handle, $data)
+    {
+        return \wp_add_inline_style($handle, $data);
+    }
 
     public function wp_get_current_commenter()
     {
