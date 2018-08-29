@@ -58,28 +58,44 @@ interface UtilityInterface
 	public function getMenuItem($idOrLocation) : MenuItem;
 
 	/**
-	 * Returns a list of paginated post links.
-	 * See wp_link_pages for the arguemtn usage.
-	 * @param array $args
-	 * @return NavLink[]
-	 */
+     * Returns a list of paginated post links for paginated posts (i.e. includes the <!--nextpage--> Quicktag one or more times).
+     * @param array $args
+     *     Optional. Array of arguments.
+     *     "next_or_number"   string Indicates whether page numbers should be used. Valid values are: number, next. Default 'number'.
+     *     "nextpagelink"     string Text for link to next page. Default __('Next page').
+     *     "previouspagelink" string Text for link to previous page. Default __('Previous page').
+     * @return NavLink[]
+     */
 	public function getPaginatedPostLinks(array $args = []);
 
 	/**
-	 * Returns a list of post pagination links.
-	 * See paginate_links for the argument usage.
-	 * @param array $args
-	 * @return NavLink[]
-	 */
+     * Returns a list of post pagination links.
+     * See paginate_links for the argument usage.
+     * @param array $args
+     *     Optional. Array of arguments.
+     *     "base"      string Used to reference the url, which will be used to create the paginated links. Default '%_%'.
+     *     "format"    string Used for pagination structure. The default value is '?page=%#%', If using pretty permalinks this would be '/page/%#%'.
+     *     "total"     int    The total amount of pages. Default is the number of pages the current query.
+     *     "current"   int    The current page number.  Default is the current page number the current query.
+     *     "show_all"  bool   If set to True, then it will show all of the pages instead of a short list of the pages near the current page. Default false.
+     *     "end_size"  int    How many numbers on either the start and the end list edges. Default 1.
+     *     "mid_size"  int    How many numbers to either side of current page, but not including current page. Default 2.
+     *     "prev_next" bool   Whether to include the previous and next links in the list or not. Default true.
+     *     "prev_text" string The previous page text. Works only if 'prev_next' argument is set to true. Default __('Previous').
+     *     "next_text" string The next page text. Works only if 'prev_next' argument is set to true. Default __('Next').
+     *     "add_args"  array  An array of query args to add. Default empty array.
+     *     "add_fragment"string A string to append to each link. Default empty.
+     * @return NavLink[]
+     */
 	public function getPostPaginationLinks(array $args = []);
 
     /**
      * Returns necessary info to render a search form.
+     * @return SearchForm
      */
     public function getSearchForm() : SearchForm;
 
 	/**
-	 * @codeCoverageIgnore
 	 * Reduce unnecessary WordPress default stuff in <head> tag.
 	 * @param array $args
 	 *     Optional. Array of arguments.
@@ -94,7 +110,8 @@ interface UtilityInterface
 	 *     "rsd"              bool Set true to remove EditURI/RSD link tag. Default true.
 	 *     "shortlink"        bool Set true to remove Shortlink link tag. Default true.
 	 *     "wlw"              bool Set true to remove Windows Live Writer Manifest link tag. Default true.
-	 *     "wp_oembed"        bool Set true to remove Embed discovery link tag and related javascript. Default true.
+     *     "wp_oembed"        bool Set true to remove Embed discovery link tag and related javascript. Default true.
+     * @return void
 	 */
 	public function minimizeHead(array $args = []);
 

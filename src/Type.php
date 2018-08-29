@@ -2,7 +2,7 @@
 namespace Manychois\Wpx;
 
 /**
- * Gives type hint to IDE, no action is done.
+ * Gives type hints to IDE, no operation is performed.
  */
 class Type
 {

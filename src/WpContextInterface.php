@@ -1,8 +1,6 @@
 <?php
 namespace Manychois\Wpx;
 
-use WP_Term;
-
 /**
  * Used to isolate direct access to WordPress built-in functions and global variables.
  */

@@ -168,7 +168,6 @@ class WpContext implements WpContextInterface
 		return \wp_list_comments($args, $comments);
 	}
 
-
 	public function wp_register_script($handle, $src, $deps = array(), $ver = false, $in_footer = false)
 	{
 		return \wp_register_script($handle, $src, $deps, $ver, $in_footer);
