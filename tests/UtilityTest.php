@@ -8,8 +8,8 @@ use Manychois\Wpx\NavLink;
 class UtilityTest extends UnitTestCase
 {
 	/**
-	 * @dataProvider data_findAspectRatio
-	 */
+     * @dataProvider data_findAspectRatio
+     */
 	public function test_findAspectRatio($expected, $w, $h)
 	{
 		$u = new Utility($this->wp());
@@ -150,14 +150,25 @@ class UtilityTest extends UnitTestCase
 		$this->assertSame('[NEXT][Next][http://default.localhost.com/page/4/]', $this->strNavLink($links[8]));
 	}
 
-	private function strNavLink(NavLink $link) {
+	private function strNavLink(NavLink $link)
+	{
 		$t = '';
 		switch ($link->type) {
-			case NavLink::PAGE: $t = 'PAGE'; break;
-			case NavLink::PREV: $t = 'PREV'; break;
-			case NavLink::NEXT: $t = 'NEXT'; break;
-			case NavLink::CURRENT: $t = 'CURRENT'; break;
-			case NavLink::ELLIPSIS: $t = 'ELLIPSIS'; break;
+			case NavLink::PAGE:
+				$t = 'PAGE';
+				break;
+			case NavLink::PREV:
+				$t = 'PREV';
+				break;
+			case NavLink::NEXT:
+				$t = 'NEXT';
+				break;
+			case NavLink::CURRENT:
+				$t = 'CURRENT';
+				break;
+			case NavLink::ELLIPSIS:
+				$t = 'ELLIPSIS';
+				break;
 		}
 		return sprintf('[%s][%s][%s]', $t, $link->text, $link->href);
 	}
