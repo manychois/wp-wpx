@@ -140,4 +140,13 @@ class UtilityTest extends IntegrationTestCase
         $this->assertSame('http://example.org/', $searchForm->action);
         $this->assertSame('He says "Oh!"', $searchForm->query);
     }
+
+    public function test_admin_css_js_registered()
+    {
+        $u = new Utility($this->wp());
+        $u->activate();
+        do_action('admin_enqueue_scripts');
+        $this->assertTrue(wp_style_is('wpx-jquery-ui', 'registered'), 'jquery-ui not registered');
+        $this->assertTrue(wp_script_is('wpx-codemirror', 'registered'), 'codemirror not registered');
+    }
 }

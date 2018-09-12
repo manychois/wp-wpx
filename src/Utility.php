@@ -665,9 +665,9 @@ class Utility implements UtilityInterface
 	 * Registers a new style.
 	 * @param string $handle Name of the stylesheet. Should be unique.
 	 * @param array  $attrs  Associative array of HTML atrributes of the style link tag. Attribute href must be present.
-	 * @param array  $deps   Optional. An array of registered stylesheet handles this stylesheet depends on. Default empty array.
-	 * @return void
-	 */
+     * @param array  $deps   Optional. An array of registered stylesheet handles this stylesheet depends on. Default empty array.
+     * @return void
+     */
 	public function registerStyle(string $handle, array $attrs, array $deps = array())
 	{
 		$src = $attrs['href'];
@@ -681,12 +681,18 @@ class Utility implements UtilityInterface
 
     public function admin_enqueue_scripts()
     {
-        $this->registerStyle('jquery-ui', [
+        $this->registerStyle('wpx-jquery-ui', [
             'href' => 'https://code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.min.css',
             'integrity' => 'sha384-A/CgvDCSM2jOpa4G++hlEtzweAjg53uGXJLUnen/qb5faVDcN+vaHrL5czAdzhK8',
             'crossorigin' => 'anonymous'
         ]);
-        $this->wp->wp_add_inline_style('jquery-ui', '.ui-widget-overlay{z-index:100000!important;}');
+        $this->wp->wp_add_inline_style('wpx-jquery-ui', '.ui-widget-overlay{z-index:100000!important;}');
+
+        $this->registerScript('wpx-codemirror', [
+            'src' => 'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.40.0/codemirror.min.js',
+            'integrity' => 'sha256-bRw9NTR0/nKmhEQc8jg716nnkA6EwKx2C46i01QGKpc=',
+            'crossorigin' => 'anonymous'
+        ]);
     }
 
 	public function script_loader_tag(string $tag, string $handle, string $src) : string
