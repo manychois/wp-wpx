@@ -8,16 +8,16 @@ use IvoPetkov\HTML5DOMDocument;
 class Utility implements UtilityInterface
 {
 	/**
-	 * @var array
-	 */
+     * @var array
+     */
 	private $scriptAttrs;
 	/**
-	 * @var array
-	 */
+     * @var array
+     */
 	private $styleAttrs;
 	/**
-	 * @var WpContextInterface
-	 */
+     * @var WpContextInterface
+     */
 	private $wp;
 
 	public function __construct(WpContextInterface $wp)
@@ -28,8 +28,8 @@ class Utility implements UtilityInterface
 	}
 
 	/**
-	 * Setups necessary WordPress hooks
-	 */
+     * Setups necessary WordPress hooks
+     */
 	public function activate()
 	{
 		$wp = $this->wp;
@@ -41,24 +41,24 @@ class Utility implements UtilityInterface
 	#region Manychois\Wpx\UtilityInterface Members
 
 	/**
-	 * Returns an approximate aspect ratio based on the width and height provided.
-	 * Returns empty if no common aspect ratio is matched.
-	 * Supported ratios: 1x1, 4x3, 16x9, 21x9.
-	 * @param int $width  Width of the media.
-	 * @param int $height Height of the media.
-	 * @return string Returns the closest aspect ratio to the specified width and height.
-	 */
+     * Returns an approximate aspect ratio based on the width and height provided.
+     * Returns empty if no common aspect ratio is matched.
+     * Supported ratios: 1x1, 4x3, 16x9, 21x9.
+     * @param int $width  Width of the media.
+     * @param int $height Height of the media.
+     * @return string Returns the closest aspect ratio to the specified width and height.
+     */
 	public function findAspectRatio(int $width, int $height) : string
 	{
 		if ($width === 0 || $height === 0) return '';
 		$ratio = $width / $height;
 		/**
-		 * 1x1  =  1
-		 * 4x3  ~= 1.333333333
-		 * 16x9 ~= 1.777777778
-		 * 21x9 ~= 2.333333333
-		 * Pick +/- 0.15 as acceptable range
-		 */
+         * 1x1  =  1
+         * 4x3  ~= 1.333333333
+         * 16x9 ~= 1.777777778
+         * 21x9 ~= 2.333333333
+         * Pick +/- 0.15 as acceptable range
+         */
 
 		if ($ratio < 0.85) {
 			$aspectRatio = '';
@@ -83,14 +83,14 @@ class Utility implements UtilityInterface
 	}
 
 	/**
-	 * Retrieve all comment information from WordPress functions.
-	 * It must be called within the tempalte file comments.php
-	 * @param array $args
-	 *     Optional. Array of arguments.
-	 *     "avatar_size" int Size that the avatar should be shown as, in pixels. Default is 32.
-	 *     "max_depth"   int The maximum comments depth. 0 for no restriction. Negative value for depth value set in admin screen. Default is -1.
-	 * @return CommentsInfo
-	 */
+     * Retrieve all comment information from WordPress functions.
+     * It must be called within the tempalte file comments.php
+     * @param array $args
+     *     Optional. Array of arguments.
+     *     "avatar_size" int Size that the avatar should be shown as, in pixels. Default is 32.
+     *     "max_depth"   int The maximum comments depth. 0 for no restriction. Negative value for depth value set in admin screen. Default is -1.
+     * @return CommentsInfo
+     */
 	public function getCommentsInfo(array $args = []) : CommentsInfo {
 		$wp = $this->wp;
 		$args = array_merge([
@@ -205,11 +205,11 @@ class Utility implements UtilityInterface
 	}
 
 	/**
-	 * Safe get the value from $_GET. The value is stripped to undo WordPress default slash insertion.
-	 * @param string $name    Name of the variable.
-	 * @param mixed  $default Value when the name is not found. Default null.
-	 * @return mixed Returns stripped value of the variable.
-	 */
+     * Safe get the value from $_GET. The value is stripped to undo WordPress default slash insertion.
+     * @param string $name    Name of the variable.
+     * @param mixed  $default Value when the name is not found. Default null.
+     * @return mixed Returns stripped value of the variable.
+     */
 	public function getFromGet(string $name, $default = null)
 	{
 		if (isset($_GET[$name])) {
@@ -220,11 +220,11 @@ class Utility implements UtilityInterface
 	}
 
 	/**
-	 * Safe gets the value from $_POST. The value is stripped to undo WordPress default slash insertion.
-	 * @param string $name    Name of the variable.
-	 * @param mixed  $default Value when the name is not found. Default null.
-	 * @return mixed Returns stripped value of the variable.
-	 */
+     * Safe gets the value from $_POST. The value is stripped to undo WordPress default slash insertion.
+     * @param string $name    Name of the variable.
+     * @param mixed  $default Value when the name is not found. Default null.
+     * @return mixed Returns stripped value of the variable.
+     */
 	public function getFromPost(string $name, $default = null)
 	{
 		if (isset($_POST[$name])) {
@@ -318,10 +318,10 @@ class Utility implements UtilityInterface
     }
 
 	/**
-	 * Gets the topmost menu item which contains the whole menu structure.
-	 * @param int|string $idOrLocation Menu id, or name of the theme location.
-	 * @return MenuItem Returns the topmost menu item.
-	 */
+     * Gets the topmost menu item which contains the whole menu structure.
+     * @param int|string $idOrLocation Menu id, or name of the theme location.
+     * @return MenuItem Returns the topmost menu item.
+     */
 	public function getMenuItem($idOrLocation) : MenuItem
 	{
 		$top = new MenuItem();
@@ -433,7 +433,7 @@ class Utility implements UtilityInterface
      *     "nextpagelink"     string Text for link to next page. Default __('Next page').
      *     "previouspagelink" string Text for link to previous page. Default __('Previous page').
      * @return NavLink[]
-	 */
+     */
 	public function getPaginatedPostLinks(array $args = [])
 	{
 		$prevNext = array_merge([
@@ -481,9 +481,9 @@ class Utility implements UtilityInterface
 	}
 
 	/**
-	 * Returns a list of post pagination links.
-	 * See paginate_links for the argument usage.
-	 * @param array $args
+     * Returns a list of post pagination links.
+     * See paginate_links for the argument usage.
+     * @param array $args
      *     Optional. Array of arguments.
      *     "base"      string Used to reference the url, which will be used to create the paginated links. Default '%_%'.
      *     "format"    string Used for pagination structure. The default value is '?page=%#%', If using pretty permalinks this would be '/page/%#%'.
@@ -497,8 +497,8 @@ class Utility implements UtilityInterface
      *     "next_text" string The next page text. Works only if 'prev_next' argument is set to true. Default __('Next').
      *     "add_args"  array  An array of query args to add. Default empty array.
      *     "add_fragment"string A string to append to each link. Default empty.
-	 * @return NavLink[]
-	 */
+     * @return NavLink[]
+     */
 	public function getPostPaginationLinks(array $args = []) {
 		$prevNext = array_merge([
 			'prev_text' => $this->wp->__('Previous'),
@@ -558,23 +558,23 @@ class Utility implements UtilityInterface
     }
 
 	/**
-	 * Reduces unnecessary WordPress default stuff in <head> tag.
-	 * @param array $args
-	 *     Optional. Array of arguments.
-	 *     "admin_bar"        bool Set true to remove the frontend admin bar. Default false.
-	 *     "api"              bool Set true to remove WP REST API link tag. Default true.
-	 *     "canonical"        bool Set true to remove canonical link tag. Default false.
-	 *     "emoji"            bool Set true to remove emoji related style and javascript. Default true.
-	 *     "extra_feed_links" bool Set true to remove automatic feed link tags. Default true.
-	 *     "generator"        bool Set true to remove WordPress version meta tag. Default true.
+     * Remove certain WordPress default stuff in <head> tag.
+     * @param array $args
+     *     Optional. Array of arguments.
+     *     "admin_bar"        bool Set true to remove the frontend admin bar. Default false.
+     *     "api"              bool Set true to remove WP REST API link tag. Default true.
+     *     "canonical"        bool Set true to remove canonical link tag. Default false.
+     *     "emoji"            bool Set true to remove emoji related style and javascript. Default true.
+     *     "extra_feed_links" bool Set true to remove automatic feed link tags. Default true.
+     *     "generator"        bool Set true to remove WordPress version meta tag. Default true.
      *     "prev_next"        bool Set true to remove links to the next and previous post. Default false.
-	 *     "res_hint"         bool Set true to remove DNS prefetch link tag. Default false.
-	 *     "rsd"              bool Set true to remove EditURI/RSD link tag. Default true.
-	 *     "shortlink"        bool Set true to remove Shortlink link tag. Default true.
-	 *     "wlw"              bool Set true to remove Windows Live Writer Manifest link tag. Default true.
-	 *     "wp_oembed"        bool Set true to remove Embed discovery link tag and related javascript. Default true.
+     *     "res_hint"         bool Set true to remove DNS prefetch link tag. Default false.
+     *     "rsd"              bool Set true to remove EditURI/RSD link tag. Default true.
+     *     "shortlink"        bool Set true to remove Shortlink link tag. Default true.
+     *     "wlw"              bool Set true to remove Windows Live Writer Manifest link tag. Default true.
+     *     "wp_oembed"        bool Set true to remove Embed discovery link tag and related javascript. Default true.
      * @return void
-	 */
+     */
 	public function minimizeHead(array $args = [])
 	{
 		$defaults = [
@@ -636,10 +636,10 @@ class Utility implements UtilityInterface
 	}
 
 	/**
-	 * Initializes a tag builder.
-	 * @param string $tagName Node name of the element.
-	 * @return TagBuilder Returns tag builder with tag name initialized.
-	 */
+     * Initializes a tag builder.
+     * @param string $tagName Node name of the element.
+     * @return TagBuilder Returns tag builder with tag name initialized.
+     */
 	public function newTag(string $tagName) : TagBuilder
 	{
 		$tb = new TagBuilder($tagName);
@@ -647,14 +647,14 @@ class Utility implements UtilityInterface
 	}
 
 	/**
-	 * Registers a new script.
-	 * @param string $handle   Name of the script. Should be unique.
-	 * @param array  $attrs    Associative array of HTML atrributes of the style link tag. Attribute src must be present.
-	 * @param array  $deps     Optional. An array of registered script handles this script depends on. Default empty array.
-	 * @param bool   $inFooter Optional. Set true to place script tag before </body>, or false to place it inside <head>.
-	 *                         Default true. Note that it is different from WordPress default value.
-	 * @return void
-	 */
+     * Registers a new script.
+     * @param string $handle   Name of the script. Should be unique.
+     * @param array  $attrs    Associative array of HTML atrributes of the style link tag. Attribute src must be present.
+     * @param array  $deps     Optional. An array of registered script handles this script depends on. Default empty array.
+     * @param bool   $inFooter Optional. Set true to place script tag before </body>, or false to place it inside <head>.
+     *                         Default true. Note that it is different from WordPress default value.
+     * @return void
+     */
 	public function registerScript(string $handle, array $attrs, array $deps = array(), bool $inFooter = true) {
 		$src = $attrs['src'];
 		$this->wp->wp_register_script($handle, $src, $deps, null, $inFooter);
@@ -662,9 +662,9 @@ class Utility implements UtilityInterface
 	}
 
 	/**
-	 * Registers a new style.
-	 * @param string $handle Name of the stylesheet. Should be unique.
-	 * @param array  $attrs  Associative array of HTML atrributes of the style link tag. Attribute href must be present.
+     * Registers a new style.
+     * @param string $handle Name of the stylesheet. Should be unique.
+     * @param array  $attrs  Associative array of HTML atrributes of the style link tag. Attribute href must be present.
      * @param array  $deps   Optional. An array of registered stylesheet handles this stylesheet depends on. Default empty array.
      * @return void
      */
@@ -719,11 +719,11 @@ class Utility implements UtilityInterface
 	#endregion
 
     /**
-	 * Returns a list of comment pagination links.
-	 * See paginate_links for the argument usage.
-	 * @param array $args
-	 * @return NavLink[]
-	 */
+     * Returns a list of comment pagination links.
+     * See paginate_links for the argument usage.
+     * @param array $args
+     * @return NavLink[]
+     */
 	private function getCommentPaginationLinks(array $args = []) {
 		$prevNext = array_merge([
 			'prev_text' => $this->wp->__('Previous'),
