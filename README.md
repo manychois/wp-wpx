@@ -28,6 +28,7 @@ $wpx->activate();
     + **wpx-codemirror**: Latest CodeMirror core script.
 
 ## To-do list
+- Increase unit test code coverage.
 - Add helper styles and functions to simplify plugin admin screen development.
 
 ## License

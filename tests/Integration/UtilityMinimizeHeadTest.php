@@ -9,6 +9,8 @@ class UtilityMinimizeHeadTest extends IntegrationTestCase
 
 	public function setUp()
 	{
+        parent::setUp();
+
 		$this->set_permalink_structure('/%postname%/');
 		$this->minimizeHeadArgs = [
 			'admin_bar' => false,

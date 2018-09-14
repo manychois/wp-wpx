@@ -3,7 +3,7 @@ namespace Manychois\Wpx\Tests\Integration;
 
 use Manychois\Wpx\WpContext;
 
-class IntegrationTestCase extends \WP_UnitTestCase
+abstract class IntegrationTestCase extends \WP_UnitTestCase
 {
 	/**
 	 * @return \Manychois\Wpx\WpContextInterface
