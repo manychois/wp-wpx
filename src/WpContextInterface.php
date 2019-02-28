@@ -1,8 +1,6 @@
 <?php
 namespace Manychois\Wpx;
 
-use WP_Term;
-
 /**
  * Used to isolate direct access to WordPress built-in functions and global variables.
  */
@@ -81,12 +79,12 @@ interface WpContextInterface
 	#endregion
 
 	/**
-	 * @return \WP_Query
-	 */
+     * @return \WP_Query
+     */
 	public function get_global_wp_query();
 
 	/**
-	 * @return \wpdb
-	 */
+     * @return \wpdb
+     */
 	public function get_global_wpdb();
 }
