@@ -564,6 +564,7 @@ class Utility implements UtilityInterface
      *     "admin_bar"        bool Set true to remove the frontend admin bar. Default false.
      *     "api"              bool Set true to remove WP REST API link tag. Default true.
      *     "canonical"        bool Set true to remove canonical link tag. Default false.
+     *     "common_block"     bool Set true to remove WordPress block styles Default true.
      *     "emoji"            bool Set true to remove emoji related style and javascript. Default true.
      *     "extra_feed_links" bool Set true to remove automatic feed link tags. Default true.
      *     "generator"        bool Set true to remove WordPress version meta tag. Default true.
@@ -581,6 +582,7 @@ class Utility implements UtilityInterface
 			'admin_bar' => false,
 			'api' => true,
 			'canonical' => false,
+            'common_block' => false,
 			'emoji' => true,
 			'extra_feed_links' => true,
 			'generator' => true,
@@ -592,47 +594,52 @@ class Utility implements UtilityInterface
 			'wp_oembed' => true
 		];
 		$args = array_merge($defaults, $args);
+
+        $wp = $this->wp;
+
 		if ($args['admin_bar']) {
-			$this->wp->add_filter('show_admin_bar', '__return_false');
+			$wp->add_filter('show_admin_bar', '__return_false');
 		}
 		if ($args['api']) {
-			$this->wp->remove_action('wp_head', 'rest_output_link_wp_head', 10);
+			$wp->remove_action('wp_head', 'rest_output_link_wp_head', 10);
 		}
 		if ($args['canonical']) {
-			$this->wp->remove_action('wp_head', 'rel_canonical');
+			$wp->remove_action('wp_head', 'rel_canonical');
 		}
-		if ($args['emoji']) {
-			$this->wp->remove_action('wp_head', 'print_emoji_detection_script', 7);
-			$this->wp->remove_action('wp_print_styles', 'print_emoji_styles');
-			$this->wp->add_filter('emoji_svg_url', '__return_false'); // Remove s.w.org prefetch link
+		if ($args['common_block']) {
+            $wp->remove_action('wp_enqueue_scripts', 'wp_common_block_scripts_and_styles');
+        }
+        if ($args['emoji']) {
+			$wp->remove_action('wp_head', 'print_emoji_detection_script', 7);
+			$wp->remove_action('wp_print_styles', 'print_emoji_styles');
+			$wp->add_filter('emoji_svg_url', '__return_false'); // Remove s.w.org prefetch link
 		}
 		if ($args['extra_feed_links']) {
-			$this->wp->remove_action('wp_head', 'feed_links_extra', 3);
+			$wp->remove_action('wp_head', 'feed_links_extra', 3);
 		}
 		if ($args['generator']) {
-			$this->wp->remove_action('wp_head', 'wp_generator');
-			$this->wp->add_filter('the_generator', '__return_false'); // Removes the generator name from the RSS feeds.
+			$wp->remove_action('wp_head', 'wp_generator');
+			$wp->add_filter('the_generator', '__return_false'); // Removes the generator name from the RSS feeds.
 		}
 		if ($args['prev_next']) {
-			$this->wp->remove_action('wp_head', 'adjacent_posts_rel_link_wp_head');
+			$wp->remove_action('wp_head', 'adjacent_posts_rel_link_wp_head');
 		}
 		if ($args['res_hint']) {
-			$this->wp->remove_action('wp_head', 'wp_resource_hints', 2);
+			$wp->remove_action('wp_head', 'wp_resource_hints', 2);
 		}
 		if ($args['rsd']) {
-			$this->wp->remove_action('wp_head', 'rsd_link');
+			$wp->remove_action('wp_head', 'rsd_link');
 		}
 		if ($args['shortlink']) {
-			$this->wp->remove_action('wp_head', 'wp_shortlink_wp_head');
+			$wp->remove_action('wp_head', 'wp_shortlink_wp_head');
 		}
 		if ($args['wlw']) {
-			$this->wp->remove_action('wp_head', 'wlwmanifest_link');
+			$wp->remove_action('wp_head', 'wlwmanifest_link');
 		}
 		if ($args['wp_oembed']) {
-			$this->wp->remove_action('wp_head', 'wp_oembed_add_discovery_links');
-			$this->wp->remove_action('wp_head', 'wp_oembed_add_host_js');
+			$wp->remove_action('wp_head', 'wp_oembed_add_discovery_links');
+			$wp->remove_action('wp_head', 'wp_oembed_add_host_js');
 		}
-
 	}
 
 	/**
