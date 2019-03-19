@@ -582,7 +582,7 @@ class Utility implements UtilityInterface
 			'admin_bar' => false,
 			'api' => true,
 			'canonical' => false,
-            'common_block' => false,
+            'common_block' => true,
 			'emoji' => true,
 			'extra_feed_links' => true,
 			'generator' => true,
